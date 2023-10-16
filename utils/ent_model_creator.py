@@ -47,6 +47,7 @@ def pos_rel(num_id1, num_id2, pos):
     else: # Relación asociativa
         x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2 = EMP.pos_rel_asoc(num_id1, num_id2, pos)
     
+    print("X_rel: ", x_rel, " Y_rel: ", y_rel, " Card1:", pos_card_1, " Card2:", pos_card_2)
     return x_rel, y_rel, conn_1, conn_2, reflx_flag, pos_card_1, pos_card_2
 
 def write_relations(l_rel, pos, num_id, num_comp):

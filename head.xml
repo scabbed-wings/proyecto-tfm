@@ -289,7 +289,7 @@
  </office:styles>
  <office:automatic-styles>
   <style:page-layout style:name="PM0">
-   <style:page-layout-properties fo:margin-top="1cm" fo:margin-bottom="1cm" fo:margin-left="1cm" fo:margin-right="1cm" fo:page-width="25cm" fo:page-height="32.7cm" style:print-orientation="portrait"/>
+   <style:page-layout-properties fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:page-width="25cm" fo:page-height="32.7cm" style:print-orientation="portrait"/>
   </style:page-layout>
   <style:style style:name="dp1" style:family="drawing-page">
    <style:drawing-page-properties draw:background-size="border" draw:fill="none"/>
