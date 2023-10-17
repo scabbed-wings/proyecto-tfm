@@ -39,56 +39,42 @@ def create_relations(ent_atr):
     return sub_filt
 
 def pos_rel(num_id1, num_id2, pos):
-    x_rel, y_rel, reflx_flag = 0, 0, False
+    x_rel, y_rel, gp = 0, 0, [0] * 4
     conn_1, conn_2, pos_card_1, pos_card_2 = [0] * 4, [0] * 4, [0] * 2, [0] * 2 # 1: Conexion entidad relacion 2: Conexion relacion entidad
     if num_id1 == num_id2: # Relacion reflexiva
-        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2 = EMP.pos_rel_relx(num_id1, pos)
-        reflx_flag = True
+        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp = EMP.pos_rel_relx(num_id1, pos)
     else: # Relación asociativa
-        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2 = EMP.pos_rel_asoc(num_id1, num_id2, pos)
+        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp = EMP.pos_rel_asoc(num_id1, num_id2, pos)
     
     print("X_rel: ", x_rel, " Y_rel: ", y_rel, " Card1:", pos_card_1, " Card2:", pos_card_2)
-    return x_rel, y_rel, conn_1, conn_2, reflx_flag, pos_card_1, pos_card_2
+    return x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp
 
 def write_relations(l_rel, pos, num_id, num_comp):
-    text_r, rel_num, first, second = "", 0, 0, 0
+    text_r, rel_num = "", 0
     for elem in l_rel:
         num_id1 = int(findall("\d+", elem[0])[0])
         num_id2 = int(findall("\d+", elem[1])[0])
-        if num_id1 != 4 and num_id2 != 4:
-            if num_id1 < num_id2:
-                first, second = num_id1, num_id2
-            else:
-                first, second = num_id2, num_id1
-        else:
-            if num_id1 == 4:
-                first = num_id1
-                second = num_id2
-            else:
-                first = num_id2
-                second = num_id1
+        if num_id1 > num_id2:
+            cop = num_id2
+            num_id2 = num_id1
+            num_id1 = cop
         num_id += 1
         num_comp += 1
         rel_num += 1
-        x_rel, y_rel, conn1, conn2, reflx, pos_card_1, pos_card_2 = pos_rel(num_id1 - 1, num_id2 - 1, pos)
+        x_rel, y_rel, conn1, conn2, pos_card_1, pos_card_2, gp = pos_rel(num_id1 - 1, num_id2 - 1, pos)
         rel_s = f'''\n<draw:custom-shape draw:name="Decision {rel_num}" draw:style-name="gr2" draw:text-style-name="P1" xml:id="id{num_id}" draw:id="id{num_id}" draw:layer="layout" svg:width="{EMP.W_REL * 2}cm" svg:height="{EMP.H_REL * 2}cm" svg:x="{x_rel}cm" svg:y="{y_rel}cm">
         <text:p text:style-name="P1"><text:span text:style-name="T1">id{num_id}</text:span></text:p>
         <draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:mirror-horizontal="false" draw:mirror-vertical="false" draw:glue-points="10800 0 0 10800 10800 21600 21600 10800" draw:text-areas="5400 5400 16200 16200" draw:type="flowchart-decision" draw:enhanced-path="M 0 10800 L 10800 0 21600 10800 10800 21600 0 10800 Z N"/>
         </draw:custom-shape>'''
         num_comp += 1
-        conn1_s = f'''\n  <draw:connector draw:style-name="gr5" draw:text-style-name="P3" draw:layer="layout" draw:type="line" svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{first}" draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+        conn1_s = f'''\n  <draw:connector draw:style-name="gr5" draw:text-style-name="P3" draw:layer="layout" draw:type="line" svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{num_id1}" draw:start-glue-point="{gp[0]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[1]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
                                     <text:p/>
                           </draw:connector>'''
         num_comp += 1
-        if reflx:
-            conn2_s = f'''\n  <draw:connector draw:style-name="gr5" draw:text-style-name="P3" draw:layer="layout" draw:type="line" svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{second}" draw:end-shape="id{num_id}" draw:end-glue-point="1" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
-                                    <text:p/>
-                              </draw:connector>'''
-        else:
-            conn2_s = f'''\n  <draw:connector draw:style-name="gr5" draw:text-style-name="P3" draw:layer="layout" draw:type="line" svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{second}" draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
-                                    <text:p/>
-                              </draw:connector>'''
-        
+        conn2_s = f'''\n  <draw:connector draw:style-name="gr5" draw:text-style-name="P3" draw:layer="layout" draw:type="line" svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{num_id2}" draw:start-glue-point="{gp[2]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[3]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+                                <text:p/>
+                            </draw:connector>'''
+
         card1_s = f'''\n    <draw:frame draw:style-name="gr14" draw:text-style-name="P5" draw:layer="layout" svg:width="1.5cm" svg:height="0.4cm" svg:x="{pos_card_1[0]}cm" svg:y="{pos_card_1[1]}cm">
                                 <draw:text-box>
                                 <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>
