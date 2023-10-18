@@ -1,0 +1,54 @@
+Entidad1, Entidad2, Relacion
+Coche, Empresa, Fabricado por
+Persona, País, Proviene de
+Libro, Escritor, Escrito por
+País, Ciudad, Ubicada en
+Teléfono móvil, Empresa, Fabricado por
+Restaurante, Ciudad, Ofrece cocina
+Película, Persona, Dirigida por
+Animal, Hábitat, Habita en
+Empresa, Producto, Produce
+Ciudad, País, Ubicada en
+Producto, Empresa, Pertenece a
+Universidad, Ciudad, Está en
+Montaña, País, Ubicada en
+Bebida, Marca, Producida por
+Artista, Persona, Actúa en
+Equipo deportivo, Ciudad, Proviene de
+Avión, Empresa, Operado por
+Receta de cocina, Comida rápida, Originaria de
+Edificio famoso, Persona, Diseñado por
+Red social, Persona, Fundada por
+Serie de televisión, Película, Pertenece a
+Universidad, Carrera, Ofrece
+Sistema operativo, Empresa, Desarrollado por
+Bebida no alcohólica, Producto, Fabricada por
+Planta, Planta medicinal, Es
+Juego de mesa, Comida rápida, Ofrece
+Monumento histórico, Ciudad, Localizado en
+Ciudad, País, Tiene población de
+Bebida alcohólica, País, Producida en
+Astronomía, Planeta, Orbita
+Comida rápida, Bebida no alcohólica, Ofrece productos de
+Viaje espacial, Astronomía, Lanzado a
+Serie de televisión, Actor, Interpretado por
+Automóvil clásico, Marca, Fabricado por
+Videojuego, Empresa, Desarrollado por
+Escritor, Novela clásica, Escrita por
+Bebida energética, Producto, Fabricada por
+Parque nacional, País, Situado en
+Marca de ropa, Producto, Ofrece
+Famoso científico, Nombre, Destacado en
+Gema preciosa, Empresa, Extraída por
+Planta medicinal, Receta de cocina, Usada en
+Ciclista profesional, Equipo deportivo, Pertenece a
+Insecto, Hábitat, Encuentra en
+Novela clásica, Autor, Escrita por
+Elemento químico, Persona, Descubierto por
+Cóctel, Bar, Preparado en
+Sitio arqueológico, Monumento histórico, Contiene
+Fruta, Gema preciosa, Similar a
+Superhéroe, Personaje, Enfrenta a
+Efecto cinematográfico, Película, Utilizado en
+Ecosistema, Animal, Hábitat de
+Software de edición de fotos, Teléfono móvil, Compatible con

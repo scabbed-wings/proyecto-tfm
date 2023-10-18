@@ -1,0 +1,51 @@
+Entidad, Atributo 1, Atributo 2, Atributo 3, Atributo 4, Atributo 5
+Coche, Marca, Modelo, Año, Color, Número de matrícula
+Persona, Nombre, Edad, Género, Nacionalidad, Profesión
+Libro, Título, Autor, Género, Número de páginas, Año de publicación
+País, Nombre, Capital, Idioma oficial, Población, Moneda
+Teléfono móvil, Marca, Modelo, Sistema operativo, Tamaño de pantalla, Precio
+Restaurante, Nombre, Tipo de cocina, Ubicación, Horario de apertura, Puntuación en reseñas
+Película, Título, Director, Género, Duración, Calificación por edad
+Animal, Especie, Hábitat, Dieta, Longitud promedio, Esperanza de vida
+Empresa, Nombre, Sector, Ingresos anuales, Número de empleados, Sede central
+Ciudad, Nombre, País, Población, Clima, Atracciones principales
+Producto, Nombre, Marca, Precio, Descripción, Disponibilidad
+Universidad, Nombre, Ubicación, Fundación, Número de estudiantes, Programas académicos
+Montaña, Nombre, Altitud, Ubicación, Rango montañoso, Dificultad de escalada
+Bebida, Nombre, Tipo, Ingredientes, Graduación alcohólica, Origen
+Artista, Nombre artístico, Género musical, Álbum más famoso, Nacionalidad, Premios
+Equipo deportivo, Nombre, Deporte, Ciudad de origen, Estadio, Títulos ganados
+Avión, Modelo, Compañía aérea, Alcance, Capacidad de pasajeros, Año de fabricación
+Receta de cocina, Nombre, Ingredientes, Instrucciones de preparación, Tiempo de cocción, País de origen
+Edificio famoso, Nombre, Altura, Ubicación, Uso principal, Arquitecto
+Red social, Nombre, Año de fundación, Número de usuarios, Funciones principales, Fundador
+Sistema operativo, Nombre, Desarrollador, Versión actual, Plataformas compatibles, Fecha de lanzamiento
+Bebida no alcohólica, Nombre, Sabor, Ingredientes principales, Calorías por porción, Marca
+Planta, Nombre científico, Hábitat natural, Altura promedio, Tipo de hojas, Temporada de floración
+Juego de mesa, Nombre, Número de jugadores, Duración promedio, Objetivo del juego, Edad recomendada
+Monumento histórico, Nombre, Ubicación, Año de construcción, Significado histórico, Estilo arquitectónico
+Bebida alcohólica, Tipo, Graduación alcohólica, Origen, Proceso de destilación, Sabor característico
+Astronomía, Planeta, Satélite, Distancia al Sol, Composición atmosférica, Temperatura promedio
+Comida rápida, Cadena, Producto más popular, Ingredientes, Precio, Calorías
+Viaje espacial, Destino, Duración, Tipo de nave espacial, Fecha de lanzamiento, Astronautas a bordo
+Serie de televisión, Título, Género, Creador, Número de temporadas, Personajes principales
+Automóvil clásico, Modelo, Año de fabricación, Valor actual, Historia única, Estado de conservación
+Videojuego, Título, Plataformas, Género, Desarrollador, Fecha de lanzamiento
+Escritor, Nombre, Nacionalidad, Obras más famosas, Género literario, Premios literarios
+Bebida energética, Marca, Sabor, Ingredientes, Contenido de cafeína, Tamaño de la lata
+Parque nacional, Nombre, País, Extensión, Flora y fauna, Atracciones
+Marca de ropa, Nombre, Tipo de ropa, País de origen, Logo, Años de existencia
+Famoso científico, Nombre, Campo de estudio, Descubrimientos importantes, Nacionalidad, Años de vida
+Gema preciosa, Nombre, Color, Dureza, Origen geográfico, Usos comunes
+Planta medicinal, Nombre común, Propiedades curativas, Formas de uso, País de origen, Precauciones
+Ciclista profesional, Nombre, Equipo actual, Palmarés, Nacionalidad, Especialidad
+Insecto, Especie, Tamaño, Hábitat, Alimentación, Ciclo de vida
+Novela clásica, Título, Autor, Año de publicación, Estilo literario, Tema principal
+Elemento químico, Símbolo, Número atómico, Masa atómica, Descubridor, Aplicaciones
+Cóctel, Nombre, Ingredientes, País de origen, Tipo de vaso, Decoración
+Sitio arqueológico, Nombre, Ubicación, Civilización antigua, Descubrimiento destacado, Historia
+Fruta, Nombre, Color, Sabor, Temporada de cosecha, Valor nutricional
+Superhéroe, Nombre, Poderes, Archienemigo, Ciudad de operación, Creador
+Efecto cinematográfico, Nombre, Descripción, Película donde se utilizó, Director, Impacto en la industria
+Ecosistema, Tipo, Ubicación geográfica, Especies dominantes, Características clave, Amenazas
+Software de edición de fotos, Nombre, Características principales, Precio, Plataformas compatibles, Fecha de lanzamiento
