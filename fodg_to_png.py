@@ -2,12 +2,14 @@ import subprocess as subp
 import utils.ent_model_creator as EMC
 import utils.ent_model_positions as EMP
 import os
+import utils.lexical_model as LM
 
 def create_imgs(cont, num_file,folder_fodg, folder_img):
-    l = EMC.num_ent_atr(5, 3)
+    #l = EMC.num_ent_atr(5, 3)
     #print("Lista: ", l)
-    rel = EMC.create_relations(l)
+    #rel = EMC.create_relations(l)
     # print("Relaciones: ", rel)
+    l, rel = LM.create_lexical_model()
     obj_pos = EMP.pos_ent(l)
     #print("Posiciones: ", obj_pos)
     fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos)

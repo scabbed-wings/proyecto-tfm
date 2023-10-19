@@ -34,29 +34,21 @@ def pos_ent(ent_atr):
     ent_pos = []
     for ind, elem in enumerate(ent_atr):
         x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * H_REL + 2 * H_ENT
-        atr_pre = True if elem[1] > 0 else False
+        atr_pre = True if len(elem[1]) > 0 else False
         if ind == 0 or ind == 2:
             if atr_pre: x += OBJ_SPACE + (W_ATR * 2)
-            # x += OBJ_SPACE + (W_ATR * 2)
             if ind == 2:
                 y = HEIGHT - y
-                # y -= OBJ_SPACE + (H_ATR * 2)
-            # elif ind == 0:
-            #     y += OBJ_SPACE + (H_ATR * 2)
         elif ind == 1 or ind == 3:
             x = WIDTH - (x + 2 * W_ENT)
             if atr_pre: x -= OBJ_SPACE + (W_ATR * 2)
-            #x -= OBJ_SPACE + (W_ATR * 2)
             if ind == 3:
                 y = HEIGHT - y
-                #y -= OBJ_SPACE + (H_ATR * 2)
-            #elif ind == 1:
-            #    y += OBJ_SPACE + (H_ATR * 2)
         elif ind == 4:
             x, y = (WIDTH/2) - W_ENT, (HEIGHT/2) - H_ENT
         
         if atr_pre:
-            atr_pos = pos_atr(ind, elem[1])
+            atr_pos = pos_atr(ind, len(elem[1]))
             ent_pos.append([x, y, atr_pos])
         else:
             ent_pos.append([x,y])

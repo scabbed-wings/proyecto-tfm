@@ -1,7 +1,6 @@
 import pandas as pd
 import random as rnd
 import numpy as np
-from copy import copy
 
 DICT_ENTS = pd.read_csv("csv/ent_atr.csv")
 DICT_RELS = pd.read_csv("csv/rel_ent.csv")
@@ -25,6 +24,7 @@ def take_atributes(ent, max_atr):
         df = DICT_ENTS[DICT_ENTS['Entidad'].str.contains(ent)].to_numpy().flatten()
         print("Ent", ent)
         atr = np.random.choice(df[1:], num_atr, replace=False)
+        atr = atr.tolist()
     
     return atr
 
@@ -36,19 +36,15 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
             df = DICT_ENTS.sample().to_numpy().flatten()
             ent_init = df[0]
         elif act_id != max_ent:
-            print("Actid: ", act_id," Len ent_atr =", len(ent_atr))
             ent_init = ent_atr[act_id][2]
             act_id += 1
                 
         search1 = DICT_RELS[DICT_RELS['Entidad1'].str.contains(ent_init)].to_numpy()
         search2 = DICT_RELS[DICT_RELS['Entidad2'].str.contains(ent_init)].to_numpy()
-        print("Res Busqueda 1: ", search1.shape[0], " Res Busqueda 2: ", search2.shape[0])
         fy = []
         if len(ent_atr) == 0 and (search1.shape[0] >= 1 or search2.shape[0] >= 1):
             init = False
-            num_atr = rnd.randint(0, max_atr)
-            if num_atr > 0:
-                atr = np.random.choice(df[1:], num_atr, replace=False)
+            atr = take_atributes(ent_init, max_atr)
             i += 1
             act_id = i
             ent_atr.append([f'''id{i}''', atr, ent_init])
@@ -129,8 +125,3 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
     print("Relaciones: ", rel)
 
     return ent_atr, rel
-
-if __name__ == "__main__":
-    create_lexical_model()
-    #df = DICT_ENTS[DICT_ENTS['Entidad'].str.contains("Marca")].to_numpy().flatten()
-    #print(df)
