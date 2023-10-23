@@ -4,7 +4,22 @@ W_ENT, H_ENT = 1.25, 1
 W_REL, H_REL = 1.5, 1
 W_CARD, H_CARD = 1.5, 0.4
 OBJ_SPACE, CARD_WS, CARD_HS = 0.5, 1, 0.2
-LEFT_MOD = -1.5
+H_LINE, W_LET = 0.5, 0.3125
+
+def size_object(words, obj_type):
+    h_obj, w_obj = 0, 0
+    max_word_len = 8 if obj_type == "ent" or obj_type == "atr" else 12
+    add_h = 0.5 if obj_type == "rel" else 0
+    if len(words) <= max_word_len:
+        h_obj += H_LINE + add_h
+        w_obj += len(words) * W_LET
+    else:
+        num_l = int(len(words)/max_word_len)
+        w_obj += max_word_len * W_LET
+        h_obj += (H_LINE * num_l) + add_h
+    
+    return [h_obj, w_obj]
+
 
 def pos_atr(ind, num_atr):
     atr_pos, x, y = [], 0, 0
