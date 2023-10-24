@@ -1,55 +1,64 @@
+from tools import has_reflx_rel, size_object
+import random as rnd
 WIDTH, HEIGHT = 25, 32.70
 W_ATR, H_ATR = 1, 0.5
 W_ENT, H_ENT = 1.25, 1
 W_REL, H_REL = 1.5, 1
 W_CARD, H_CARD = 1.5, 0.4
 OBJ_SPACE, CARD_WS, CARD_HS = 0.5, 1, 0.2
-H_LINE, W_LET = 0.5, 0.3125
 
-def size_object(words, obj_type):
-    h_obj, w_obj = 0, 0
-    max_word_len = 8 if obj_type == "ent" or obj_type == "atr" else 12
-    add_h = 0.5 if obj_type == "rel" else 0
-    if len(words) <= max_word_len:
-        h_obj += H_LINE + add_h
-        w_obj += len(words) * W_LET
-    else:
-        num_l = int(len(words)/max_word_len)
-        w_obj += max_word_len * W_LET
-        h_obj += (H_LINE * num_l) + add_h
-    
-    return [h_obj, w_obj]
-
-
-def pos_atr(ind, num_atr):
+def pos_atr(ind, atr, w_ent):
     atr_pos, x, y = [], 0, 0
+    h_atr, w_atr = size_object(atr[0], "atr")
+    max_w, max_h4 = w_atr, 0
     if ind == 0 or ind  == 2:
         x = OBJ_SPACE
-        y = OBJ_SPACE if ind == 0 else HEIGHT - (OBJ_SPACE + 2 * H_ATR)
+        y = OBJ_SPACE if ind == 0 else HEIGHT - (OBJ_SPACE + 2 * h_atr)
     elif ind == 1 or ind == 3:
-        x = WIDTH - (OBJ_SPACE + 2 * W_ATR)
-        y = OBJ_SPACE if ind == 1 else HEIGHT - (OBJ_SPACE + 2 * H_ATR)
+        x = WIDTH - (OBJ_SPACE + 2 * w_atr)
+        y = OBJ_SPACE if ind == 1 else HEIGHT - (OBJ_SPACE + 2 * h_atr)
     elif ind == 4:
-        x = (WIDTH / 2) - (OBJ_SPACE + 2 * W_ATR + W_ENT)
+        x = (WIDTH / 2) - (OBJ_SPACE + 2 * w_atr + w_ent)
         y = (HEIGHT / 2)
-    for num in range(num_atr):
+        max_h4 += 2 * h_atr
+    
+    atr_pos.append([x,y,h_atr,w_atr])
+    for num, elem in enumerate(atr[1:]):
+        h_atr, w_atr = size_object(elem, "atr")
+        max_w = w_atr if w_atr > max_w else max_w
         if ind == 0 or ind == 1:
-            y += OBJ_SPACE + 2 * H_ATR
+            y += OBJ_SPACE + 2 * h_atr
         elif ind == 2 or ind == 3:
-            y -= OBJ_SPACE + 2 * H_ATR
+            x = WIDTH - (OBJ_SPACE + 2 * w_atr)
+            y -= OBJ_SPACE + 2 * h_atr
         else:
-            if num%2 != 0:
-                y += num * (OBJ_SPACE + 2 * H_ATR)
+            x = (WIDTH / 2) - (OBJ_SPACE + 2 * w_atr + w_ent)
+            if (num+1)%2 != 0:
+                y += max_h4 + (OBJ_SPACE + 2 * h_atr)
             else:
-                y -= num * (OBJ_SPACE + 2 * H_ATR)
-        atr_pos.append([x,y])
+                y -= max_h4 + (OBJ_SPACE + 2 * h_atr)
+            
+            max_h4 += OBJ_SPACE + 2 * h_atr
+        atr_pos.append([x,y, h_atr, w_atr])
     return atr_pos
 
-def pos_ent(ent_atr):
+def pos_ent(ent_atr, rel):
     ent_pos = []
-    for ind, elem in enumerate(ent_atr):
-        x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * H_REL + 2 * H_ENT
+    inds = rnd.sample(range(0, 5), len(ent_atr))
+    for elem in ent_atr:
+        atr_pos, ind = 0, inds.pop()
+        h_ent, w_ent = size_object(elem[2], "ent")
+        h_rel = has_reflx_rel(elem[0], rel)
+        x,y = 0, 0
+        if h_rel:
+            x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * h_rel + 2 * h_ent
+        else:
+            x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * h_ent
+
         atr_pre = True if len(elem[1]) > 0 else False
+        if atr_pre:
+            atr_pos = pos_atr(ind, elem[1])
+
         if ind == 0 or ind == 2:
             if atr_pre: x += OBJ_SPACE + (W_ATR * 2)
             if ind == 2:
@@ -62,11 +71,10 @@ def pos_ent(ent_atr):
         elif ind == 4:
             x, y = (WIDTH/2) - W_ENT, (HEIGHT/2) - H_ENT
         
-        if atr_pre:
-            atr_pos = pos_atr(ind, len(elem[1]))
-            ent_pos.append([x, y, atr_pos])
-        else:
-            ent_pos.append([x,y])
+        ent_pos.append([x, y, atr_pos])
+        elem.append(ind)
+        
+        
     
     print("Posiciones: ", ent_pos)
     return ent_pos
