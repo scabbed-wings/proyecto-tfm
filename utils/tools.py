@@ -1,3 +1,4 @@
+from random import getrandbits, choice
 H_LINE, W_LET = 0.5, 0.3125
 
 def size_object(words, obj_type):
@@ -25,3 +26,24 @@ def get_pos_ent(id_ent, ent_atr):
     for elem in ent_atr:
         if elem[0] == id_ent:
             return elem[3]
+
+def mod_pos_ent_atr(ind, max_mod=4, step=0.2):
+    values = range(0, max_mod, 0.2)
+    vert_mod, horz_mod = 0, 0
+    if ind == 0 or ind == 2:
+        if getrandbits(1):
+            horz_mod = choice(values)
+        if getrandbits(1):
+            vert_mod = -choice(values) if ind == 2 else choice(values)
+    elif ind == 1 or ind == 3:
+        if getrandbits(1):
+            horz_mod = -choice(values)
+        if getrandbits(1):
+            vert_mod = -choice(values if ind == 3 else choice(values))
+    else:
+        if getrandbits(1):
+            horz_mod = -choice(values) if getrandbits(1) else choice(values)
+        if getrandbits(1):
+            vert_mod = -choice(values) if getrandbits(1) else choice(values)
+    
+    return horz_mod, vert_mod

@@ -94,7 +94,7 @@ def write_ent_atr(ent_atr, pos):
     text_w, text_c = "", ""
     for ind, elem in enumerate(ent_atr):
         num_comp += 1
-        ent_s = f'''\n    <draw:custom-shape draw:name="Process {num_proc}" draw:style-name="gr5" draw:text-style-name="P1" xml:id="{elem[0]}" draw:id="{elem[0]}" draw:layer="layout" svg:width="{EMP.W_ENT * 2}cm" svg:height="{EMP.H_ENT * 2}cm" svg:x="{pos[ind][0]}cm" svg:y="{pos[ind][1]}cm">
+        ent_s = f'''\n    <draw:custom-shape draw:name="Process {num_proc}" draw:style-name="gr5" draw:text-style-name="P1" xml:id="{elem[0]}" draw:id="{elem[0]}" draw:layer="layout" svg:width="{pos[ind][3] * 2}cm" svg:height="{pos[ind][4] * 2}cm" svg:x="{pos[ind][0]}cm" svg:y="{pos[ind][1]}cm">
         <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>
         <draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:mirror-horizontal="false" draw:mirror-vertical="false" draw:glue-points="10800 0 0 10800 10800 21600 21600 10800" draw:type="flowchart-process" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/>
         </draw:custom-shape>'''
@@ -104,7 +104,7 @@ def write_ent_atr(ent_atr, pos):
             for ind_atr, elem2 in enumerate(pos[ind][2]):
                 num_id += 1
                 num_comp += 1
-                atr_s =  f'''\n    <draw:custom-shape draw:style-name="gr5" draw:text-style-name="P1" xml:id="id{num_id}" draw:id="id{num_id}" draw:layer="layout" svg:width="{EMP.W_ATR * 2}cm" svg:height="{EMP.H_ATR * 2}cm" svg:x="{elem2[0]}cm" svg:y="{elem2[1]}cm">
+                atr_s =  f'''\n    <draw:custom-shape draw:style-name="gr5" draw:text-style-name="P1" xml:id="id{num_id}" draw:id="id{num_id}" draw:layer="layout" svg:width="{elem2[2] * 2}cm" svg:height="{elem2[3] * 2}cm" svg:x="{elem2[0]}cm" svg:y="{elem2[1]}cm">
                                 <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[1][ind_atr]}</text:span></text:p>
                                 <draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:glue-points="10800 0 3163 3163 0 10800 3163 18437 10800 21600 18437 18437 21600 10800 18437 3163" draw:text-areas="3163 3163 18437 18437" draw:type="ellipse" draw:enhanced-path="U 10800 10800 10800 10800 0 360 Z N"/>
                                 </draw:custom-shape>'''

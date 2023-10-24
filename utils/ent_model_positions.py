@@ -1,5 +1,7 @@
-from tools import has_reflx_rel, size_object
+from tools import has_reflx_rel, size_object, mod_pos_ent_atr
 import random as rnd
+
+
 WIDTH, HEIGHT = 25, 32.70
 W_ATR, H_ATR = 1, 0.5
 W_ENT, H_ENT = 1.25, 1
@@ -7,7 +9,7 @@ W_REL, H_REL = 1.5, 1
 W_CARD, H_CARD = 1.5, 0.4
 OBJ_SPACE, CARD_WS, CARD_HS = 0.5, 1, 0.2
 
-def pos_atr(ind, atr, w_ent):
+def pos_atr(ind, atr, w_ent, mod_h, mod_v):
     atr_pos, x, y = [], 0, 0
     h_atr, w_atr = size_object(atr[0], "atr")
     max_w, max_h4 = w_atr, 0
@@ -19,63 +21,65 @@ def pos_atr(ind, atr, w_ent):
         y = OBJ_SPACE if ind == 1 else HEIGHT - (OBJ_SPACE + 2 * h_atr)
     elif ind == 4:
         x = (WIDTH / 2) - (OBJ_SPACE + 2 * w_atr + w_ent)
-        y = (HEIGHT / 2)
-        max_h4 += 2 * h_atr
-    
+        y = (HEIGHT / 2) + mod_h
+        max_h4 += (2 * h_atr)
+    x += mod_h
+    y += mod_v
     atr_pos.append([x,y,h_atr,w_atr])
     for num, elem in enumerate(atr[1:]):
         h_atr, w_atr = size_object(elem, "atr")
         max_w = w_atr if w_atr > max_w else max_w
         if ind == 0 or ind == 1:
-            y += OBJ_SPACE + 2 * h_atr
+            y += OBJ_SPACE + 2 * h_atr + mod_v
         elif ind == 2 or ind == 3:
-            x = WIDTH - (OBJ_SPACE + 2 * w_atr)
+            x = WIDTH - (OBJ_SPACE + 2 * w_atr) + mod_h
             y -= OBJ_SPACE + 2 * h_atr
+            y += mod_v
         else:
-            x = (WIDTH / 2) - (OBJ_SPACE + 2 * w_atr + w_ent)
+            x = (WIDTH / 2) - (OBJ_SPACE + 2 * w_atr + w_ent) + mod_h
             if (num+1)%2 != 0:
-                y += max_h4 + (OBJ_SPACE + 2 * h_atr)
+                y += max_h4 + (OBJ_SPACE + 2 * h_atr) + mod_v
             else:
                 y -= max_h4 + (OBJ_SPACE + 2 * h_atr)
+                y += mod_v
             
             max_h4 += OBJ_SPACE + 2 * h_atr
-        atr_pos.append([x,y, h_atr, w_atr])
-    return atr_pos
+        atr_pos.append([x,y, w_atr, h_atr])
+    return atr_pos, max_w
 
 def pos_ent(ent_atr, rel):
     ent_pos = []
     inds = rnd.sample(range(0, 5), len(ent_atr))
     for elem in ent_atr:
-        atr_pos, ind = 0, inds.pop()
+        atr_pos, max_w, ind = 0, 0, inds.pop()
         h_ent, w_ent = size_object(elem[2], "ent")
         h_rel = has_reflx_rel(elem[0], rel)
+        mod_h, mod_v = mod_pos_ent_atr(ind)
         x,y = 0, 0
         if h_rel:
-            x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * h_rel + 2 * h_ent
+            x, y = OBJ_SPACE + mod_h, (2 * OBJ_SPACE) + (2 * h_rel) + (2 * h_ent) + mod_v
         else:
-            x, y = OBJ_SPACE, 2 * OBJ_SPACE + 2 * h_ent
+            x, y = OBJ_SPACE + mod_h, (2 * OBJ_SPACE) + (2 * h_ent) + mod_v
 
         atr_pre = True if len(elem[1]) > 0 else False
         if atr_pre:
-            atr_pos = pos_atr(ind, elem[1])
+            atr_pos, max_w = pos_atr(ind, elem[1], w_ent, mod_h, mod_v)
 
         if ind == 0 or ind == 2:
-            if atr_pre: x += OBJ_SPACE + (W_ATR * 2)
+            if atr_pre: x += OBJ_SPACE + (max_w * 2)
             if ind == 2:
                 y = HEIGHT - y
         elif ind == 1 or ind == 3:
-            x = WIDTH - (x + 2 * W_ENT)
-            if atr_pre: x -= OBJ_SPACE + (W_ATR * 2)
+            x = WIDTH - (x + 2 * w_ent) + mod_h
+            if atr_pre: x -= OBJ_SPACE + (max_w * 2)
             if ind == 3:
                 y = HEIGHT - y
         elif ind == 4:
-            x, y = (WIDTH/2) - W_ENT, (HEIGHT/2) - H_ENT
+            x, y = (WIDTH/2) - w_ent + mod_h, (HEIGHT/2) - h_ent + mod_v
         
-        ent_pos.append([x, y, atr_pos])
+        ent_pos.append([x, y, atr_pos, w_ent, h_ent])
         elem.append(ind)
         
-        
-    
     print("Posiciones: ", ent_pos)
     return ent_pos
 

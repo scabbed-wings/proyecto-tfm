@@ -10,7 +10,7 @@ def create_imgs(cont, num_file,folder_fodg, folder_img):
     #rel = EMC.create_relations(l)
     # print("Relaciones: ", rel)
     l, rel = LM.create_lexical_model()
-    obj_pos = EMP.pos_ent(l)
+    obj_pos = EMP.pos_ent(l, rel)
     #print("Posiciones: ", obj_pos)
     fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos)
     rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp)
