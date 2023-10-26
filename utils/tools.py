@@ -1,19 +1,25 @@
 from random import getrandbits, choice
-H_LINE, W_LET = 0.5, 0.3125
+import numpy as np
+H_LINE, W_LET = 0.6, 0.3125
 
-def size_object(words, obj_type):
+def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
+    min_w = 3 if obj_type == "rel" else 2
+    min_h = 1 if obj_type == "atr" else 2
     max_word_len = 8 if obj_type == "ent" or obj_type == "atr" else 12
-    add_h = 0.5 if obj_type == "rel" else 0
-    if len(words) <= max_word_len:
-        h_obj += H_LINE + add_h
-        w_obj += len(words) * W_LET
-    else:
-        num_l = int(len(words)/max_word_len)
-        w_obj += max_word_len * W_LET
-        h_obj += (H_LINE * num_l) + add_h
+    add_h = 0.5 if obj_type == "rel" else 0.5
+    words = word.split(" ")
+    w_obj = (len(max(words, key=len)) * W_LET)
+    h_obj = len(words) * H_LINE
+    w_obj = min_w if w_obj < min_w else w_obj
+    h_obj = min_h if h_obj < min_h else h_obj
+
+    w_obj += add_h
     
     return h_obj/2, w_obj/2
+
+def max_len_word(e):
+    return len(max(e.split(" "), key=len))
 
 def has_reflx_rel(id_ent, rel):
     for elem in rel:
@@ -23,12 +29,13 @@ def has_reflx_rel(id_ent, rel):
     return 0
 
 def get_pos_ent(id_ent, ent_atr):
-    for elem in ent_atr:
+    for ind, elem in enumerate(ent_atr):
         if elem[0] == id_ent:
-            return elem[3]
+            print("Id_ent: ", id_ent, " Numero de posicion: ", elem[3], " Numero de indice: ", ind)
+            return elem[3], ind
 
-def mod_pos_ent_atr(ind, max_mod=4, step=0.2):
-    values = range(0, max_mod, 0.2)
+def mod_pos_ent_atr(ind, max_mod=3, step=0.2):
+    values = np.arange(0, max_mod, step).tolist()
     vert_mod, horz_mod = 0, 0
     if ind == 0 or ind == 2:
         if getrandbits(1):
@@ -39,11 +46,13 @@ def mod_pos_ent_atr(ind, max_mod=4, step=0.2):
         if getrandbits(1):
             horz_mod = -choice(values)
         if getrandbits(1):
-            vert_mod = -choice(values if ind == 3 else choice(values))
+            vert_mod = -choice(values) if ind == 3 else choice(values)
     else:
         if getrandbits(1):
             horz_mod = -choice(values) if getrandbits(1) else choice(values)
         if getrandbits(1):
             vert_mod = -choice(values) if getrandbits(1) else choice(values)
+    
+    print("Posicion: ", ind, " horz_mod: ", horz_mod, " Vert_mod: ", vert_mod)
     
     return horz_mod, vert_mod

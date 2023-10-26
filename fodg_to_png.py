@@ -13,7 +13,7 @@ def create_imgs(cont, num_file,folder_fodg, folder_img):
     obj_pos = EMP.pos_ent(l, rel)
     #print("Posiciones: ", obj_pos)
     fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos)
-    rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp)
+    rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp, l)
     cont_text = fin_text + rel_text
     cont_text += '''\n</draw:page>
     </office:drawing>
@@ -40,6 +40,6 @@ if __name__ == "__main__":
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
-    num_img = 20
+    num_img = 5
     for i in range(num_img):
         create_imgs(contents, i + 1, path_folder_files, path_folder_img)

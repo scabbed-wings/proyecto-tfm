@@ -1,7 +1,7 @@
 import pandas as pd
 import random as rnd
 import numpy as np
-
+from utils.tools import max_len_word 
 DICT_ENTS = pd.read_csv("csv/ent_atr.csv")
 DICT_RELS = pd.read_csv("csv/rel_ent.csv")
 
@@ -25,6 +25,7 @@ def take_atributes(ent, max_atr):
         print("Ent", ent)
         atr = np.random.choice(df[1:], num_atr, replace=False)
         atr = atr.tolist()
+    atr.sort(key=max_len_word)
     
     return atr
 
@@ -121,7 +122,7 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
         elif len(ent_atr) == max_ent and act_id == max_ent:
             nom_flag = True
 
-    print("Entidades: ", ent_atr)
+    #print("Entidades: ", ent_atr)
     print("Relaciones: ", rel)
 
     return ent_atr, rel
