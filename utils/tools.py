@@ -6,7 +6,6 @@ def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
     min_w = 3 if obj_type == "rel" else 2
     min_h = 1 if obj_type == "atr" else 2
-    max_word_len = 8 if obj_type == "ent" or obj_type == "atr" else 12
     add_h = 0.5 if obj_type == "rel" else 0.5
     words = word.split(" ")
     w_obj = (len(max(words, key=len)) * W_LET)
@@ -47,12 +46,26 @@ def mod_pos_ent_atr(ind, max_mod=3, step=0.2):
             horz_mod = -choice(values)
         if getrandbits(1):
             vert_mod = -choice(values) if ind == 3 else choice(values)
-    else:
-        if getrandbits(1):
-            horz_mod = -choice(values) if getrandbits(1) else choice(values)
-        if getrandbits(1):
-            vert_mod = -choice(values) if getrandbits(1) else choice(values)
+    # else:
+    #     if getrandbits(1):
+    #         horz_mod = -choice(values) if getrandbits(1) else choice(values)
+    #     if getrandbits(1):
+    #         vert_mod = -choice(values) if getrandbits(1) else choice(values)
     
     print("Posicion: ", ind, " horz_mod: ", horz_mod, " Vert_mod: ", vert_mod)
     
     return horz_mod, vert_mod
+
+def box_intersection(obj1, obj2):
+    l1 = np.array([obj1[0], obj1[1]])
+    r1 = np.array([obj1[0] + obj1[2], obj1[1] + obj1[3]])
+    l2 = np.array([obj2[0], obj2[1]])
+    r2 = np.array([obj2[0] + obj2[2], obj2[1] + obj2[3]])
+    # Rectangulo a la izquierda o la derecha
+    if l1[0] > r2[0] or l2[0] > r1[0]:
+        return 0
+    # Rectángulo arriba o abajo
+    if r1[1] > l2[1] or r2[1] > l1[1]:
+        return 0
+ 
+    return True
