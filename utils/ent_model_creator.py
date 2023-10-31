@@ -6,6 +6,7 @@ from utils.tools import get_pos_ent, size_object
 
 OBJ_STYLES = ["gr5", "gr2", "gr1"]
 LINE_STYLES = ["gr3", "gr1", "gr2", "gr5"]
+ATTR_LINE_STYLES = ["gr11", "gr12", "gr15"]
 
 def num_ent_atr(max_ent, max_atr):
     l = []
@@ -107,7 +108,7 @@ def write_ent_atr(ent_atr, pos):
         num_comp += 1
         pos_img = elem[3]
         ent_style = rnd.choice(OBJ_STYLES)
-        conn_style = rnd.choice(LINE_STYLES)
+        conn_style = rnd.choice(ATTR_LINE_STYLES)
         line_type = "" if rnd.getrandbits(1) else f'''draw:type="line"'''
         ent_s = f'''\n    <draw:custom-shape draw:name="Process {num_proc}" draw:style-name="{ent_style}" draw:text-style-name="P1" xml:id="{elem[0]}" draw:id="{elem[0]}" draw:layer="layout" svg:width="{pos[ind][3] * 2}cm" svg:height="{pos[ind][4] * 2}cm" svg:x="{pos[ind][0]}cm" svg:y="{pos[ind][1]}cm">
         <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>

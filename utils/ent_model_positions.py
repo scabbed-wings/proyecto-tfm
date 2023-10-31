@@ -137,13 +137,17 @@ def pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel): # Pos
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + 2 * pos[ind_pos1][3], x_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + pos[ind_pos1][4], y_rel + h_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0], x_rel + 2 * w_rel
-        conn_2[1], conn_2[3] = pos[ind_pos2][1] + pos[ind_pos2][4], y_rel + h_rel 
+        conn_2[1], conn_2[3] = pos[ind_pos2][1] + pos[ind_pos2][4], y_rel + h_rel
         pos_card_1[0], pos_card_2[0] = pos[ind_pos1][0] + 2 * pos[ind_pos1][3] + CARD_WS, pos[ind_pos2][0] - W_CARD - CARD_WS
         pos_card_1[1] = pos[ind_pos1][1] + (pos[ind_pos1][4]/2) - CARD_HS if num_id2 == 1 else pos[ind_pos1][1] + pos[ind_pos1][4] + CARD_HS
         pos_card_2[1] = pos[ind_pos2][1] + (pos[ind_pos2][4]/2) - CARD_HS if num_id2 == 1 else pos[ind_pos2][1] + pos[ind_pos2][4] + CARD_HS
         gp[0], gp[1], gp[2], gp[3] = 1, 3, 3, 1 # Der ENT, Izq REL, Izq ENT, Der REL
     elif (num_id1 == 0 and num_id2 == 2) or (num_id1 == 1 and num_id2 == 3): # Relaciones verticales id mas bajo arriba
         x_rel, y_rel = pos[ind_pos1][0], (((pos[ind_pos1][1] + 2 * pos[ind_pos1][4]) + pos[ind_pos2][1]) / 2) - h_rel
+        if num_id1 == 0:
+            x_rel = x_rel - 3 if x_rel - 3 > 0 else OBJ_SPACE
+        else:
+            x_rel = x_rel + 3 if x_rel + (2 * w_rel) + OBJ_SPACE < WIDTH else WIDTH - (OBJ_SPACE + 2 * w_rel)
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel + w_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + 2 * pos[ind_pos1][4], y_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0] + pos[ind_pos2][3], x_rel +  w_rel
@@ -156,7 +160,7 @@ def pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel): # Pos
         x_rel = ((pos[ind_pos1][0] + (pos[ind_pos2][0] + 2 * w_rel)) / 2.) - w_rel 
         y_rel = (((pos[ind_pos1][1] + 2 * h_rel) + pos[ind_pos2][1]) / 2.) - h_rel
         y_rel += 8 # Evitar colision con entidad numero 5
-        x_rel -= 3
+        x_rel += 2
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel + 2 * w_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + 2 * pos[ind_pos1][4], y_rel + h_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0] + pos[ind_pos2][3], x_rel
@@ -168,7 +172,7 @@ def pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel): # Pos
         x_rel = (((pos[ind_pos1][0] + 2 * w_rel) + pos[ind_pos2][0]) / 2.) - w_rel 
         y_rel = (((pos[ind_pos1][1] + 2 * h_rel) + pos[ind_pos2][1]) / 2.) - h_rel
         y_rel -= 7 # Evitar colision con entidad numero 5
-        #x_rel +=  # Evitar colision con entidad numero 5
+        x_rel += 2 # Evitar colision con entidad numero 5
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + 2 * pos[ind_pos1][4], y_rel + h_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0] + pos[ind_pos2][3], x_rel + 2 * w_rel
