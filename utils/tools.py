@@ -69,3 +69,14 @@ def box_intersection(obj1, obj2):
         return 0
  
     return True
+
+def rel_by_pos(ent_atr, rel):
+    rel_ent_pos = []
+    for elem in rel:
+        num_id1, ind_pos1 = get_pos_ent(elem[0], ent_atr)
+        num_id2, ind_pos2 = get_pos_ent(elem[1], ent_atr)
+        rel_ent_pos.append([[num_id1, num_id2], [ind_pos1, ind_pos2]])
+    return rel_ent_pos
+
+def mod_pos_rel(id_pos1, id_pos2, rel_pos, ent_atr): # Modificador de posición por intersección
+    return 0
