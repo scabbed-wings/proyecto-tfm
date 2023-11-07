@@ -1,6 +1,7 @@
 from random import getrandbits, choice
 import numpy as np
 H_LINE, W_LET = 0.6, 0.3125
+REL_TAG = [0] * 10
 
 def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
@@ -71,12 +72,45 @@ def box_intersection(obj1, obj2):
     return True
 
 def rel_by_pos(ent_atr, rel):
-    rel_ent_pos = []
+    ind = 0
     for elem in rel:
-        num_id1, ind_pos1 = get_pos_ent(elem[0], ent_atr)
-        num_id2, ind_pos2 = get_pos_ent(elem[1], ent_atr)
-        rel_ent_pos.append([[num_id1, num_id2], [ind_pos1, ind_pos2]])
-    return rel_ent_pos
+        num_id1, _ = get_pos_ent(elem[0], ent_atr)
+        num_id2, _ = get_pos_ent(elem[1], ent_atr)
+        if num_id1 > num_id2:
+            cop = num_id2
+            num_id2 = num_id1
+            num_id1 = cop
+        if num_id1 != num_id2:
+            if num_id1 == 0:
+                if num_id2 in [1,2]:
+                    ind = 2 if num_id2 == 1 else 0
+                else:
+                    ind = 8 if num_id2 == 3 else 4
+            elif num_id1 == 1:
+                if num_id2 in [2, 3]:
+                    ind = 9 if num_id2 == 2 else 1
+                else: ind = 7
+            elif num_id1 == 2:
+                ind = 3 if num_id2 == 3 else 5
+            elif num_id1 == 3:
+                ind = 6
 
-def mod_pos_rel(id_pos1, id_pos2, rel_pos, ent_atr): # Modificador de posición por intersección
-    return 0
+            REL_TAG[ind] = 1
+        
+def mod_pos_rel(id_pos1, id_pos2, rel_pos): # Modificador de posición por intersección
+    mod_x, mod_y = 0, 0
+    if id_pos1 == 0:
+        if id_pos2 in [1,2]:
+            mod_x = 0 if id_pos2 == 1 else -3
+            mod_y = -2 if id_pos2 == 1 else 0
+        else:
+            ind = 8 if id_pos2 == 3 else 4
+    elif id_pos1 == 1:
+        if id_pos2 in [2, 3]:
+            ind = 9 if id_pos2 == 2 else 1
+        else: ind = 7
+    elif id_pos1 == 2:
+        ind = 3 if id_pos2 == 3 else 5
+    elif id_pos1 == 3:
+        ind = 6
+    return mod_x, mod_y
