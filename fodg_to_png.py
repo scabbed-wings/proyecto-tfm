@@ -40,6 +40,6 @@ if __name__ == "__main__":
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
-    num_img = 5
+    num_img = 10
     for i in range(num_img):
         create_imgs(contents, i + 1, path_folder_files, path_folder_img)

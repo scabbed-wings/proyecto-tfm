@@ -104,7 +104,15 @@ def mod_pos_rel(id_pos1, id_pos2, rel_pos): # Modificador de posición por inter
             mod_x = 0 if id_pos2 == 1 else -3
             mod_y = -2 if id_pos2 == 1 else 0
         else:
-            ind = 8 if id_pos2 == 3 else 4
+            if id_pos2 == 3:
+                if REL_TAG[1] and REL_TAG[7] + REL_TAG[6] > 1:
+                    mod_y = 2
+                    mod_x = -4
+                else:
+                    mod_y = -7 # Evitar colision con entidad numero 5
+                    mod_x = 2 # Evitar colision con entidad numero 5 
+            else:
+                mod_y = -2
     elif id_pos1 == 1:
         if id_pos2 in [2, 3]:
             ind = 9 if id_pos2 == 2 else 1
