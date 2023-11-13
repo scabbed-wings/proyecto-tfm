@@ -1,7 +1,6 @@
 from random import getrandbits, choice
 import numpy as np
-H_LINE, W_LET = 0.6, 0.3125
-REL_TAG = [0] * 10
+import utils.globals as gb
 
 def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
@@ -9,8 +8,8 @@ def size_object(word, obj_type):
     min_h = 1 if obj_type == "atr" else 2
     add_h = 0.5 if obj_type == "rel" else 0.5
     words = word.split(" ")
-    w_obj = (len(max(words, key=len)) * W_LET)
-    h_obj = len(words) * H_LINE
+    w_obj = (len(max(words, key=len)) * gb.W_LET)
+    h_obj = len(words) * gb.H_LINE
     w_obj = min_w if w_obj < min_w else w_obj
     h_obj = min_h if h_obj < min_h else h_obj
 
@@ -31,10 +30,10 @@ def has_reflx_rel(id_ent, rel):
 def get_pos_ent(id_ent, ent_atr):
     for ind, elem in enumerate(ent_atr):
         if elem[0] == id_ent:
-            print("Id_ent: ", id_ent, " Numero de posicion: ", elem[3], " Numero de indice: ", ind)
+            # print("Id_ent: ", id_ent, " Numero de posicion: ", elem[3], " Numero de indice: ", ind)
             return elem[3], ind
 
-def mod_pos_ent_atr(ind, max_mod=3, step=0.2):
+def mod_pos_ent_atr(ind, max_mod=2, step=0.2):
     values = np.arange(0, max_mod, step).tolist()
     vert_mod, horz_mod = 0, 0
     if ind == 0 or ind == 2:
@@ -47,13 +46,8 @@ def mod_pos_ent_atr(ind, max_mod=3, step=0.2):
             horz_mod = -choice(values)
         if getrandbits(1):
             vert_mod = -choice(values) if ind == 3 else choice(values)
-    # else:
-    #     if getrandbits(1):
-    #         horz_mod = -choice(values) if getrandbits(1) else choice(values)
-    #     if getrandbits(1):
-    #         vert_mod = -choice(values) if getrandbits(1) else choice(values)
     
-    print("Posicion: ", ind, " horz_mod: ", horz_mod, " Vert_mod: ", vert_mod)
+    # print("Posicion: ", ind, " horz_mod: ", horz_mod, " Vert_mod: ", vert_mod)
     
     return horz_mod, vert_mod
 
@@ -68,8 +62,22 @@ def box_intersection(obj1, obj2):
     # Rectángulo arriba o abajo
     if r1[1] > l2[1] or r2[1] > l1[1]:
         return 0
- 
-    return True
+    return 1
+
+def check_intersection_rel(ent_atr, rel_dim):
+    for elem in ent_atr:
+        print("CHECK ELEM: ", elem)
+        obj_ent = [elem[0], elem[1], elem[3], elem[4]]
+        if box_intersection(rel_dim, obj_ent): return 1
+        if len(elem[2]):
+            for elem2 in elem[2]:
+                if box_intersection(rel_dim, elem2): return 1
+        
+    if len(gb.ADDED_REL):
+        for elem in gb.ADDED_REL:
+            if box_intersection(rel_dim, elem): return 1
+    
+    return 0
 
 def rel_by_pos(ent_atr, rel):
     ind = 0
@@ -95,30 +103,65 @@ def rel_by_pos(ent_atr, rel):
             elif num_id1 == 3:
                 ind = 6
 
-            REL_TAG[ind] = 1
+            gb.CONTR_FLAG[ind] = 1
         
-def mod_pos_rel(id_pos1, id_pos2, rel_pos): # Modificador de posición por intersección
+def mod_pos_rel(id_pos1, id_pos2): # Modify position by intersection
     mod_x, mod_y = 0, 0
     if id_pos1 == 0:
-        if id_pos2 in [1,2]:
-            mod_x = 0 if id_pos2 == 1 else -3
+        if id_pos2 in [1,2]: # ID pos 1 or pos 2
+            mod_x = 0 if id_pos2 == 1 else - 1.5
             mod_y = -2 if id_pos2 == 1 else 0
         else:
-            if id_pos2 == 3:
-                if REL_TAG[1] and REL_TAG[7] + REL_TAG[6] > 1:
+            if id_pos2 == 3: # ID pos 3
+                # If diagonal relation by lower path
+                if (not gb.CONTR_FLAG[0] and not gb.CONTR_FLAG[9] and gb.CONTR_FLAG[7] + gb.CONTR_FLAG[6] + gb.CONTR_FLAG[1] >= 1) or \
+                (gb.CONTR_FLAG[7] and not gb.CONTR_FLAG[5] and not gb.CONTR_FLAG[9]):
                     mod_y = 2
                     mod_x = -4
-                else:
+                else: # Diagonal relation by higher path
                     mod_y = -7 # Evitar colision con entidad numero 5
                     mod_x = 2 # Evitar colision con entidad numero 5 
-            else:
-                mod_y = -2
+            else: # ID pos 4 this position has to be aware of atributes in entity 4
+                mod_y = -3
+                mod_x = 3
     elif id_pos1 == 1:
-        if id_pos2 in [2, 3]:
-            ind = 9 if id_pos2 == 2 else 1
-        else: ind = 7
+        if id_pos2 in [2, 3]: # ID pos 2 or pos 3
+            if id_pos2 == 2:
+                # Diagonal relation by higher path
+                if (not gb.CONTR_FLAG[0] and not gb.CONTR_FLAG[8] and gb.CONTR_FLAG[7] + gb.CONTR_FLAG[6] + gb.CONTR_FLAG[1] >= 1) or \
+                    (gb.CONTR_FLAG[6] and not gb.CONTR_FLAG[4] and not gb.CONTR_FLAG[8]):
+                    mod_y = -3
+                    mod_x = 4
+                else: # If diagonal relation by lower path
+                    mod_y = 8
+                    mod_x = 3
+            else: # ID pos 3
+                mod_x = 1.5
+        else: # ID pos 4
+            mod_x = 2
     elif id_pos1 == 2:
-        ind = 3 if id_pos2 == 3 else 5
-    elif id_pos1 == 3:
-        ind = 6
+        if id_pos2 == 3: # ID pos 3
+            mod_y = 3
+        else: # ID pos 4 this position has to be aware of atributes in entity 4
+            mod_y = 1
+            mod_x = 1.5
+    elif id_pos1 == 3: # ID pos 4
+        mod_x = 2
     return mod_x, mod_y
+
+def control_pos(id_pos1, id_pos2, x, y, w, h):
+    if (id_pos1 == 0 and id_pos2 == 2) or (id_pos1 == 1 and id_pos2 == 3):
+        if id_pos1 == 0:
+            x = x if x > 0 else gb.OBJ_SPACE
+        else:
+            x = x if x + (2 * w) + gb.OBJ_SPACE < gb.WIDTH else gb.WIDTH - (gb.OBJ_SPACE + 2 * w)
+    elif (id_pos1 == 0 and id_pos2 == 1) or (id_pos1 == 2 and id_pos2 == 3):
+        if id_pos1 == 0:
+            y = y if y > 0 else gb.OBJ_SPACE
+        else:
+            y = y if y + (2 * h) + gb.OBJ_SPACE < gb.HEIGHT else gb.HEIGHT - (gb.OBJ_SPACE + 2 * h)
+    
+    return x, y
+
+def init_control_flags():
+    gb.CONTR_FLAG = [0] * 11

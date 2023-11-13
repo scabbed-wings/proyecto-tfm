@@ -3,14 +3,17 @@ import utils.ent_model_creator as EMC
 import utils.ent_model_positions as EMP
 import os
 import utils.lexical_model as LM
+from utils.tools import rel_by_pos, init_control_flags
 
 def create_imgs(cont, num_file,folder_fodg, folder_img):
     #l = EMC.num_ent_atr(5, 3)
     #print("Lista: ", l)
     #rel = EMC.create_relations(l)
     # print("Relaciones: ", rel)
+    init_control_flags()
     l, rel = LM.create_lexical_model()
     obj_pos = EMP.pos_ent(l, rel)
+    rel_by_pos(l, rel)
     #print("Posiciones: ", obj_pos)
     fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos)
     rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp, l)

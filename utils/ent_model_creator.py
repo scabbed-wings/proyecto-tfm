@@ -1,12 +1,8 @@
 import random as rnd
 from copy import copy
-from re import findall
 import utils.ent_model_positions as EMP
 from utils.tools import get_pos_ent, size_object
-
-OBJ_STYLES = ["gr5", "gr2", "gr1"]
-LINE_STYLES = ["gr3", "gr1", "gr2", "gr5"]
-ATTR_LINE_STYLES = ["gr11", "gr12", "gr15"]
+import utils.globals as gb
 
 def num_ent_atr(max_ent, max_atr):
     l = []
@@ -49,21 +45,25 @@ def pos_rel(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel):
     if num_id1 == num_id2: # Relacion reflexiva
         x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp = EMP.pos_rel_relx(num_id1, ind_pos1, pos, w_rel, h_rel)
     else: # Relación asociativa
-        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp = EMP.pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel)
+        x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp = EMP.pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, w_rel, h_rel, pos)
     
-    print("X_rel: ", x_rel, " Y_rel: ", y_rel, " Card1:", pos_card_1, " Card2:", pos_card_2)
+    # print("X_rel: ", x_rel, " Y_rel: ", y_rel, " Card1:", pos_card_1, " Card2:", pos_card_2)
     return x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp
 
 def write_relations(l_rel, pos, num_id, num_comp, ent_atr):
     text_r, rel_num = "", 0
+    print("CONTROL_FLAG: ", gb.CONTR_FLAG)
     for elem in l_rel:
-        #num_id1 = int(findall("\d+", elem[0])[0])
-        #num_id2 = int(findall("\d+", elem[1])[0])
         id1, id2 = elem[0], elem[1]
-        num_id1, ind_pos1 = get_pos_ent(elem[0], ent_atr)
-        num_id2, ind_pos2 = get_pos_ent(elem[1], ent_atr)
-        rel_style = rnd.choice(OBJ_STYLES)
-        line_style = rnd.choice(LINE_STYLES)
+        if id1 != id2:
+            num_id1, ind_pos1 = get_pos_ent(id1, ent_atr)
+            num_id2, ind_pos2 = get_pos_ent(id2, ent_atr)
+        else:
+            num_id1, ind_pos1 = get_pos_ent(id1, ent_atr)
+            num_id2, ind_pos2 = num_id1, ind_pos2
+
+        rel_style = rnd.choice(gb.OBJ_STYLES)
+        line_style = rnd.choice(gb.LINE_STYLES)
         line_type = "" if rnd.getrandbits(1) else f'''draw:type="line"'''
         h_rel, w_rel = size_object(elem[4], "rel")
         if num_id1 > num_id2:
@@ -82,11 +82,18 @@ def write_relations(l_rel, pos, num_id, num_comp, ent_atr):
         conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}" draw:start-glue-point="{gp[0]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[1]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
                                     <text:p/>
                           </draw:connector>'''
+        # Sin gluepoints
+        #conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}"  draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+        #                    <text:p/>
+        #            </draw:connector>'''
         num_comp += 1
         conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:start-glue-point="{gp[2]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[3]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
                                 <text:p/>
                             </draw:connector>'''
-
+        # Sin gluepoints
+        #conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+        #                <text:p/>
+        #            </draw:connector>'''
         card1_s = f'''\n    <draw:frame draw:style-name="gr14" draw:text-style-name="P5" draw:layer="layout" svg:width="1.5cm" svg:height="0.4cm" svg:x="{pos_card_1[0]}cm" svg:y="{pos_card_1[1]}cm">
                                 <draw:text-box>
                                 <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>
@@ -107,8 +114,8 @@ def write_ent_atr(ent_atr, pos):
     for ind, elem in enumerate(ent_atr):
         num_comp += 1
         pos_img = elem[3]
-        ent_style = rnd.choice(OBJ_STYLES)
-        conn_style = rnd.choice(ATTR_LINE_STYLES)
+        ent_style = rnd.choice(gb.OBJ_STYLES)
+        conn_style = rnd.choice(gb.ATTR_LINE_STYLES)
         line_type = "" if rnd.getrandbits(1) else f'''draw:type="line"'''
         ent_s = f'''\n    <draw:custom-shape draw:name="Process {num_proc}" draw:style-name="{ent_style}" draw:text-style-name="P1" xml:id="{elem[0]}" draw:id="{elem[0]}" draw:layer="layout" svg:width="{pos[ind][3] * 2}cm" svg:height="{pos[ind][4] * 2}cm" svg:x="{pos[ind][0]}cm" svg:y="{pos[ind][1]}cm">
         <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>
@@ -119,7 +126,7 @@ def write_ent_atr(ent_atr, pos):
         if len(elem[1]) > 0:
             for ind_atr, elem2 in enumerate(pos[ind][2]):
                 num_id += 1
-                atr_style = rnd.choice(OBJ_STYLES)
+                atr_style = rnd.choice(gb.OBJ_STYLES)
                 num_comp += 1
                 atr_s =  f'''\n    <draw:custom-shape draw:style-name="{atr_style}" draw:text-style-name="P1" xml:id="id{num_id}" draw:id="id{num_id}" draw:layer="layout" svg:width="{elem2[2] * 2}cm" svg:height="{elem2[3] * 2}cm" svg:x="{elem2[0]}cm" svg:y="{elem2[1]}cm">
                                 <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[1][ind_atr]}</text:span></text:p>
