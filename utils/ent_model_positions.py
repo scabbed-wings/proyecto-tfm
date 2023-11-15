@@ -1,4 +1,4 @@
-from utils.tools import has_reflx_rel, size_object, mod_pos_ent_atr
+from utils.tools import has_reflx_rel, size_object, mod_pos_ent_atr, max_len_word
 import random as rnd
 from utils.tools import check_intersection_rel, mod_pos_rel, control_pos
 import utils.globals as gb
@@ -59,6 +59,8 @@ def pos_ent(ent_atr, rel):
 
         atr_pre = True if len(elem[1]) > 0 else False
         if atr_pre:
+            if ind == 0 or ind == 1:
+                elem[1].sort(key=max_len_word, reverse=True)
             atr_pos, max_w = pos_atr(ind, elem[1], w_ent, mod_h, mod_v)
             if ind == 4: gb.CONTR_FLAG[10] = 1
 
@@ -222,7 +224,7 @@ def pos_rel_asoc(num_id1, num_id2, ind_pos1, ind_pos2, w_rel, h_rel, pos): # Pos
             else:
                 y_rel = ((pos[ind_pos1][1] + (pos[ind_pos2][1] + 2 * pos[ind_pos2][4])) / 2.) - h_rel
             
-    if gb.CONTR_FLAG[10] or (num_id1 == 0 and num_id2 == 3) or (num_id1 == 1 and num_id2 == 2):
+    if gb.CONTR_FLAG[10] or gb.CONTR_FLAG[9] or gb.CONTR_FLAG[8]:
         mod_x, mod_y = mod_pos_rel(num_id1, num_id2)
         x_rel, y_rel = control_pos(num_id1, num_id2, x_rel + mod_x, y_rel + mod_y, w_rel, h_rel)
     elif check_intersection_rel(pos, [x_rel, y_rel, w_rel, h_rel]):

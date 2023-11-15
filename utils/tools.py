@@ -1,10 +1,11 @@
 from random import getrandbits, choice
 import numpy as np
 import utils.globals as gb
+import utils.position_rules as pr
 
 def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
-    min_w = 3 if obj_type == "rel" else 2
+    min_w = 3.5 if obj_type == "rel" else 2
     min_h = 1 if obj_type == "atr" else 2
     add_h = 0.5 if obj_type == "rel" else 0.5
     words = word.split(" ")
@@ -66,7 +67,7 @@ def box_intersection(obj1, obj2):
 
 def check_intersection_rel(ent_atr, rel_dim):
     for elem in ent_atr:
-        print("CHECK ELEM: ", elem)
+        #print("CHECK ELEM: ", elem)
         obj_ent = [elem[0], elem[1], elem[3], elem[4]]
         if box_intersection(rel_dim, obj_ent): return 1
         if len(elem[2]):
@@ -108,45 +109,13 @@ def rel_by_pos(ent_atr, rel):
 def mod_pos_rel(id_pos1, id_pos2): # Modify position by intersection
     mod_x, mod_y = 0, 0
     if id_pos1 == 0:
-        if id_pos2 in [1,2]: # ID pos 1 or pos 2
-            mod_x = 0 if id_pos2 == 1 else - 1.5
-            mod_y = -2 if id_pos2 == 1 else 0
-        else:
-            if id_pos2 == 3: # ID pos 3
-                # If diagonal relation by lower path
-                if (not gb.CONTR_FLAG[0] and not gb.CONTR_FLAG[9] and gb.CONTR_FLAG[7] + gb.CONTR_FLAG[6] + gb.CONTR_FLAG[1] >= 1) or \
-                (gb.CONTR_FLAG[7] and not gb.CONTR_FLAG[5] and not gb.CONTR_FLAG[9]):
-                    mod_y = 2
-                    mod_x = -4
-                else: # Diagonal relation by higher path
-                    mod_y = -7 # Evitar colision con entidad numero 5
-                    mod_x = 2 # Evitar colision con entidad numero 5 
-            else: # ID pos 4 this position has to be aware of atributes in entity 4
-                mod_y = -3
-                mod_x = 3
+        mod_x, mod_y = pr.mod_rules_ent0(id_pos2)
     elif id_pos1 == 1:
-        if id_pos2 in [2, 3]: # ID pos 2 or pos 3
-            if id_pos2 == 2:
-                # Diagonal relation by higher path
-                if (not gb.CONTR_FLAG[0] and not gb.CONTR_FLAG[8] and gb.CONTR_FLAG[7] + gb.CONTR_FLAG[6] + gb.CONTR_FLAG[1] >= 1) or \
-                    (gb.CONTR_FLAG[6] and not gb.CONTR_FLAG[4] and not gb.CONTR_FLAG[8]):
-                    mod_y = -3
-                    mod_x = 4
-                else: # If diagonal relation by lower path
-                    mod_y = 8
-                    mod_x = 3
-            else: # ID pos 3
-                mod_x = 1.5
-        else: # ID pos 4
-            mod_x = 2
+        mod_x, mod_y = pr.mod_rules_ent1(id_pos2)
     elif id_pos1 == 2:
-        if id_pos2 == 3: # ID pos 3
-            mod_y = 3
-        else: # ID pos 4 this position has to be aware of atributes in entity 4
-            mod_y = 1
-            mod_x = 1.5
+        mod_x, mod_y = pr.mod_rules_ent2(id_pos2)
     elif id_pos1 == 3: # ID pos 4
-        mod_x = 2
+        mod_x, mod_y  = pr.mod_rules_ent3()
     return mod_x, mod_y
 
 def control_pos(id_pos1, id_pos2, x, y, w, h):

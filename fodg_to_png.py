@@ -45,4 +45,5 @@ if __name__ == "__main__":
         os.mkdir(path_folder_img)
     num_img = 10
     for i in range(num_img):
+        print(f"-------- CREANDO IMAGEN NUMERO {i+1} ----------------")
         create_imgs(contents, i + 1, path_folder_files, path_folder_img)
