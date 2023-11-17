@@ -29,10 +29,10 @@ def mod_rules_ent0(id_pos2):
             
             if R_DIAG8_LOW:
                 print("Diagonal 9 por abajo")
-                mod_y = 9
-                mod_x = -6
+                mod_y = 10
+                mod_x = -4
             else: # Diagonal relation by higher path
-                mod_y = -7 # Evitar colision con entidad numero 5
+                mod_y = -10 # Evitar colision con entidad numero 5
                 mod_x = 3 # Evitar colision con entidad numero 5 
         else: # ID pos 4 this position has to be aware of atributes in entity 4
             if not gb.CONTR_FLAG[8] and not gb.CONTR_FLAG[7]:
@@ -40,7 +40,7 @@ def mod_rules_ent0(id_pos2):
                 mod_y = 2
             else:
                 mod_x = 1
-                mod_y = -1
+                mod_y = 2
     return mod_x, mod_y
 
 def mod_rules_ent1(id_pos2):
@@ -51,22 +51,22 @@ def mod_rules_ent1(id_pos2):
             # Diagonal relation by higher path
             if R_DIAG9_UP:
                 print("Diagonal 10 por arriba")
-                mod_y = -9
+                mod_y = -10
                 mod_x = -6
             else: # If diagonal relation by lower path
-                mod_y = 9
-                mod_x = 4
+                mod_y = 10
+                mod_x = 3
         else: # ID pos 3
             if not R_DIAG8_LOW or not R_DIAG9_UP or gb.CONTR_FLAG[6] or gb.CONTR_FLAG[7]:
                 print("Desplazando relacion 1-3")
                 mod_x = 3
     else: # ID pos 4
         if not gb.CONTR_FLAG[4]:
-            mod_x = -2
-            mod_y = 1
+            mod_x = -1
+            mod_y = 3
         else:
             mod_x = 2
-            mod_y = 2
+            mod_y = 3
     return mod_x, mod_y
 
 def mod_rules_ent2(id_pos2):
@@ -85,9 +85,9 @@ def mod_rules_ent2(id_pos2):
 def mod_rules_ent3():
     mod_x, mod_y = 0, 0
     if gb.CONTR_FLAG[10] and gb.CONTR_FLAG[5]:
-        mod_x = -1
+        mod_x = 1
         mod_y = -2
     elif not gb.CONTR_FLAG[5]:
-        mod_x = -2
+        mod_x = -1
         mod_y = -2
     return mod_x, mod_y

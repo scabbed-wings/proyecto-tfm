@@ -79,21 +79,28 @@ def write_relations(l_rel, pos, num_id, num_comp, ent_atr):
         <draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:mirror-horizontal="false" draw:mirror-vertical="false" draw:glue-points="10800 0 0 10800 10800 21600 21600 10800" draw:text-areas="5400 5400 16200 16200" draw:type="flowchart-decision" draw:enhanced-path="M 0 10800 L 10800 0 21600 10800 10800 21600 0 10800 Z N"/>
         </draw:custom-shape>'''
         num_comp += 1
-        conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}" draw:start-glue-point="{gp[0]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[1]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
-                                    <text:p/>
-                          </draw:connector>'''
-        # Sin gluepoints
-        #conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}"  draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
-        #                    <text:p/>
-        #            </draw:connector>'''
-        num_comp += 1
-        conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:start-glue-point="{gp[2]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[3]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+        if (num_id1 == 0 and num_id2 == 3) or (num_id1 == 1 and num_id2 == 2):
+            # Sin gluepoints
+            conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}"  draw:end-shape="id{num_id}" draw:end-glue-point="{gp[1]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
                                 <text:p/>
+                        </draw:connector>'''
+        else:
+            conn1_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn1[0]}cm" svg:y1="{conn1[1]}cm" svg:x2="{conn1[2]}cm" svg:y2="{conn1[3]}cm" draw:start-shape="id{id1}" draw:start-glue-point="{gp[0]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[1]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+                                        <text:p/>
                             </draw:connector>'''
-        # Sin gluepoints
-        #conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:end-shape="id{num_id}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
-        #                <text:p/>
-        #            </draw:connector>'''
+        
+        num_comp += 1
+        if (num_id1 == 0 and num_id2 == 3) or (num_id1 == 1 and num_id2 == 2):
+            # Sin gluepoints
+            conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[3]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+                            <text:p/>
+                        </draw:connector>''' 
+        else:
+
+            conn2_s = f'''\n  <draw:connector draw:style-name="{line_style}" draw:text-style-name="P3" draw:layer="layout" {line_type} svg:x1="{conn2[0]}cm" svg:y1="{conn2[1]}cm" svg:x2="{conn2[2]}cm" svg:y2="{conn2[3]}cm" draw:start-shape="id{id2}" draw:start-glue-point="{gp[2]}" draw:end-shape="id{num_id}" draw:end-glue-point="{gp[3]}" svg:d="M13107 11077h1237v-1h1234" svg:viewBox="0 0 2472 2">
+                                    <text:p/>
+                                </draw:connector>'''
+
         card1_s = f'''\n    <draw:frame draw:style-name="gr14" draw:text-style-name="P5" draw:layer="layout" svg:width="1.5cm" svg:height="0.4cm" svg:x="{pos_card_1[0]}cm" svg:y="{pos_card_1[1]}cm">
                                 <draw:text-box>
                                 <text:p text:style-name="P1"><text:span text:style-name="T1">{elem[2]}</text:span></text:p>

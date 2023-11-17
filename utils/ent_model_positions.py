@@ -1,7 +1,7 @@
-from utils.tools import has_reflx_rel, size_object, mod_pos_ent_atr, max_len_word
+from utils.tools import has_reflx_rel, size_object, mod_pos_ent_atr, max_len_word, check_intersection_rel, mod_pos_rel, control_pos
 import random as rnd
-from utils.tools import check_intersection_rel, mod_pos_rel, control_pos
 import utils.globals as gb
+from utils.position_rules import init_diag_vals
 
 
 def pos_atr(ind, atr, w_ent, mod_h, mod_v):
@@ -150,21 +150,31 @@ def conn_and_gp_asoc(num_id1, num_id2, ind_pos1, ind_pos2, x_rel, y_rel, w_rel, 
         pos_card_2[0] = pos[ind_pos2][0] + pos[ind_pos2][3] - gb.W_CARD if num_id2 == 2 else pos[ind_pos2][0] + pos[ind_pos2][3]
         gp[0], gp[1], gp[2], gp[3] = 2, 4, 4, 2 # Abajo Ent, Arriba Rel, Arriba Ent, Abajo Rel
     elif num_id1 == 1 and num_id2 == 2: # Conn1 entidad de arriba Conn2 entidad de abajo
+        _, DIAG9_UP = init_diag_vals()
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel + 2 * w_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + 2 * pos[ind_pos1][4], y_rel + h_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0] + pos[ind_pos2][3], x_rel
         conn_2[1], conn_2[3] = pos[ind_pos2][1], y_rel + h_rel
         pos_card_1[0], pos_card_2[0] = x_rel + w_rel - gb.W_CARD - gb.CARD_WS, x_rel + w_rel + gb.CARD_WS
         pos_card_1[1], pos_card_2[1] = y_rel + h_rel - gb.H_CARD - gb.CARD_HS, y_rel + h_rel + gb.CARD_HS
-        gp[0], gp[1], gp[2], gp[3] = 2, 1, 4, 3    # ABajo 1, Der Rel, Arriba 2, Izq Rel  
+        if DIAG9_UP:
+            print("Cambiando gluepoints diagonal 9")
+            gp[0], gp[1], gp[2], gp[3] = 3, 1, 2, 3    # ABajo 1, Der Rel, Arriba 2, Izq Rel  
+        else:
+            gp[0], gp[1], gp[2], gp[3] = 2, 1, 1, 3    # ABajo 1, Der Rel, Arriba 2, Izq Rel  
     elif num_id1 == 0 and num_id2 == 3: # Conn1 entidad de arriba Conn2 entidad de abajo
+        DIAG8_LOW, _ = init_diag_vals()
         conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel
         conn_1[1], conn_1[3] = pos[ind_pos1][1] + 2 * pos[ind_pos1][4], y_rel + h_rel
         conn_2[0], conn_2[2] = pos[ind_pos2][0] + pos[ind_pos2][3], x_rel + 2 * w_rel
         conn_2[1], conn_2[3] = pos[ind_pos2][1], y_rel + h_rel
         pos_card_1[0], pos_card_2[0] = x_rel + w_rel - gb.W_CARD - gb.CARD_WS, x_rel + w_rel + gb.CARD_WS
         pos_card_1[1], pos_card_2[1] = y_rel + h_rel + gb.CARD_HS, y_rel + h_rel - 2 * gb.CARD_HS - gb.H_CARD
-        gp[0], gp[1], gp[2], gp[3] = 1, 3, 4, 1    # Der 1, Izq Rel, Arriba 2, Der Rel 
+        if DIAG8_LOW:
+            print("Cambiando gluepoints diagonal 8")
+            gp[0], gp[1], gp[2], gp[3] = 2, 3, 3, 1    # Der 1, Izq Rel, Arriba 2, Der Rel 
+        else:
+            gp[0], gp[1], gp[2], gp[3] = 2, 3, 4, 1    # Der 1, Izq Rel, Arriba 2, Der Rel 
     elif num_id2 == 4:
         if num_id1 in [0, 2]:
             conn_1[0], conn_1[2] = pos[ind_pos1][0] + pos[ind_pos1][3], x_rel + w_rel
