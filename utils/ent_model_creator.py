@@ -64,7 +64,7 @@ def write_relations(l_rel, pos, num_id, num_comp, ent_atr):
 
         rel_style = rnd.choice(gb.OBJ_STYLES)
         line_style = rnd.choice(gb.LINE_STYLES)
-        line_type = "" if rnd.getrandbits(1) else f'''draw:type="line"'''
+        line_type = rnd.choice(gb.REL_LINE_STYLES)
         h_rel, w_rel = size_object(elem[4], "rel")
         if num_id1 > num_id2:
             cop, cop2, cop3 = num_id2, ind_pos2, id2

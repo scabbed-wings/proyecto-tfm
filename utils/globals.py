@@ -13,3 +13,4 @@ OBJ_SPACE, CARD_WS, CARD_HS = 0.3, 1, 0.2
 OBJ_STYLES = ["gr5", "gr2", "gr1"]
 LINE_STYLES = ["gr3", "gr1", "gr2", "gr5"]
 ATTR_LINE_STYLES = ["gr11", "gr12", "gr15"]
+REL_LINE_STYLES = ["", f'''draw:type="line"''', f'''draw:type="curve"''']
