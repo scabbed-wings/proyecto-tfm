@@ -3,20 +3,21 @@ import utils.ent_model_creator as EMC
 import utils.ent_model_positions as EMP
 import os
 import utils.lexical_model as LM
-from utils.tools import rel_by_pos, init_control_flags
+from utils.tools import rel_by_pos, init_control_flags, set_styles
 
-def create_imgs(cont, num_file,folder_fodg, folder_img):
+def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     #l = EMC.num_ent_atr(5, 3)
     #print("Lista: ", l)
     #rel = EMC.create_relations(l)
     # print("Relaciones: ", rel)
     init_control_flags()
-    l, rel = LM.create_lexical_model()
+    l, rel = LM.create_lexical_model(max_ent)
     obj_pos = EMP.pos_ent(l, rel)
     rel_by_pos(l, rel)
     #print("Posiciones: ", obj_pos)
-    fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos)
-    rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp, l)
+    ltr, lta, obs, conn_s = set_styles()
+    fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos, obs, conn_s, lta)
+    rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp, l, obs, conn_s, ltr)
     cont_text = fin_text + rel_text
     cont_text += '''\n</draw:page>
     </office:drawing>
@@ -43,7 +44,10 @@ if __name__ == "__main__":
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
-    num_img = 10
-    for i in range(num_img):
-        print(f"-------- CREANDO IMAGEN NUMERO {i+1} ----------------")
-        create_imgs(contents, i + 1, path_folder_files, path_folder_img)
+    set_img = 10 # Numero de imágenes por cada grupo de entidades
+    num_img = 0
+    for i in range(2,6):
+        for j in range(set_img):
+            num_img += 1
+            print(f"-------- CREANDO IMAGEN NUMERO {num_img} ----------------")
+            create_imgs(contents, i, num_img, path_folder_files, path_folder_img)

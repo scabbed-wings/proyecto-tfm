@@ -51,7 +51,7 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
             ent_atr.append([f'''id{i}''', atr, ent_init])
             if search1.shape[0] >= 1:
                 for j in range(search1.shape[0]):
-                    if len(ent_atr) < 5:
+                    if len(ent_atr) < max_ent:
                         if search1[j][1] != ent_init and not search1[j][1] in fy:
                             i += 1
                             ent = search1[j][1]
@@ -60,13 +60,16 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
                             card_1, card_2 = take_card()
                             rel.append([f'''id{act_id}''', f'''id{i}''', card_1, card_2, search1[j][2]])
                             fy.append(ent)
-                    elif search1[j][1] == ent_init:
-                        card_1, card_2 = take_card()
-                        rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search1[j][2]])
+                        elif search1[j][1] == ent_init:
+                            card_1, card_2 = take_card()
+                            rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search1[j][2]])
+                    else:
+                        nom_flag = True
+                        break
 
             if search2.shape[0] >= 1:
                 for j in range(search2.shape[0]):
-                    if len(ent_atr) < 5:
+                    if len(ent_atr) < max_ent:
                         if search2[j][0] != ent_init and not search2[j][0] in fy:
                             i += 1
                             ent = search2[j][0]
@@ -78,44 +81,55 @@ def create_lexical_model(max_ent= 5, max_atr= 5):
                         elif search2[j][0] == ent_init:
                             card_1, card_2 = take_card()
                             rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search2[j][2]])
+                    else:
+                        nom_flag = True
+                        break
         elif 1 < len(ent_atr) < max_ent  and (search1.shape[0] >= 1 or search2.shape[0] >= 1):
             if search1.shape[0] >= 1:
                 for j in range(search1.shape[0]):
-                        if search1[j][1] != ent_init and not search1[j][1] in fy:
-                            ind = findValIndex(search1[j][1], ent_atr)
-                            if ind == -1 and len(ent_atr) < max_ent:
-                                i += 1
-                                ent = search1[j][1]
-                                atr = take_atributes(ent, max_atr)
-                                ent_atr.append([f'''id{i}''', atr, ent])
+                        if len(ent_atr) < max_ent:
+                            if search1[j][1] != ent_init and not search1[j][1] in fy:
+                                ind = findValIndex(search1[j][1], ent_atr)
+                                if ind == -1 and len(ent_atr) < max_ent:
+                                    i += 1
+                                    ent = search1[j][1]
+                                    atr = take_atributes(ent, max_atr)
+                                    ent_atr.append([f'''id{i}''', atr, ent])
+                                    card_1, card_2 = take_card()
+                                    rel.append([f'''id{act_id}''', f'''id{i}''', card_1, card_2, search1[j][2]])
+                                    fy.append(ent)
+                                elif act_id - 1 < ind:
+                                    card_1, card_2 = take_card()
+                                    rel.append([f'''id{act_id}''', f'''id{ind + 1}''', card_1, card_2, search1[j][2]])
+                            elif search1[j][1] == ent_init:
                                 card_1, card_2 = take_card()
-                                rel.append([f'''id{act_id}''', f'''id{i}''', card_1, card_2, search1[j][2]])
-                                fy.append(ent)
-                            elif act_id - 1 < ind:
-                                card_1, card_2 = take_card()
-                                rel.append([f'''id{act_id}''', f'''id{ind + 1}''', card_1, card_2, search1[j][2]])
-                        elif search1[j][1] == ent_init:
-                            card_1, card_2 = take_card()
-                            rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search1[j][2]])
+                                rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search1[j][2]])
+                        else:
+                            nom_flag = True
+                            break
 
             if search2.shape[0] >= 1:
                 for j in range(search2.shape[0]):
-                        if search2[j][0] != ent_init and not search2[j][0] in fy:
-                            ind = findValIndex(search2[j][0], ent_atr)
-                            if ind == -1 and len(ent_atr) < max_ent:
-                                i += 1
-                                ent = search2[j][0]
-                                atr = take_atributes(ent, max_atr)
-                                ent_atr.append([f'''id{i}''', atr, ent])
+                        if len(ent_atr) < max_ent:
+                            if search2[j][0] != ent_init and not search2[j][0] in fy:
+                                ind = findValIndex(search2[j][0], ent_atr)
+                                if ind == -1 and len(ent_atr) < max_ent:
+                                    i += 1
+                                    ent = search2[j][0]
+                                    atr = take_atributes(ent, max_atr)
+                                    ent_atr.append([f'''id{i}''', atr, ent])
+                                    card_1, card_2 = take_card()
+                                    rel.append([f'''id{act_id}''', f'''id{i}''', card_1, card_2, search2[j][2]])
+                                    fy.append(ent)
+                                elif act_id - 1 < ind:
+                                    card_1, card_2 = take_card()
+                                    rel.append([f'''id{act_id}''', f'''id{ind + 1}''', card_1, card_2, search2[j][2]])
+                            elif search2[j][0] == ent_init:
                                 card_1, card_2 = take_card()
-                                rel.append([f'''id{act_id}''', f'''id{i}''', card_1, card_2, search2[j][2]])
-                                fy.append(ent)
-                            elif act_id - 1 < ind:
-                                card_1, card_2 = take_card()
-                                rel.append([f'''id{act_id}''', f'''id{ind + 1}''', card_1, card_2, search2[j][2]])
-                        elif search2[j][0] == ent_init:
-                            card_1, card_2 = take_card()
-                            rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search2[j][2]])
+                                rel.append([f'''id{act_id}''', f'''id{act_id}''', card_1, card_2, search2[j][2]])
+                        else:
+                            nom_flag = True
+                            break
     
             if len(ent_atr) == act_id and search1.shape[0] + search2.shape[0] == 1:
                 nom_flag = True

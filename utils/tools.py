@@ -134,3 +134,17 @@ def control_pos(id_pos1, id_pos2, x, y, w, h):
 
 def init_control_flags():
     gb.CONTR_FLAG = [0] * 11
+
+def set_styles():
+    #line_type = "" if getrandbits(1) else f'''draw:type="line"'''
+    line_type_rel = choice(gb.REL_LINE_STYLES)
+    line_type_attr = choice(gb.REL_LINE_STYLES)
+    # Set de lineas finas
+    if getrandbits(1):
+        obj_style = "gr1" if getrandbits(1) else "gr2"
+        conn_style = "gr11" if getrandbits(1) else "gr12"
+    else:
+        obj_style = "gr5"
+        conn_style = "gr15"
+    
+    return line_type_rel, line_type_attr, obj_style, conn_style
