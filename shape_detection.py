@@ -1,5 +1,7 @@
 import cv2
 from glob import glob
+import utils.detector.hough as H
+import matplotlib.pyplot as plt
 
 file_list = glob("img/*.png")
 for elem in file_list[:4]:
@@ -10,13 +12,17 @@ for elem in file_list[:4]:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.resize(gray, new_shape)
     img_res = cv2.resize(img, new_shape)
-    _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_OTSU)
-    cont, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    for elem in cont[1:]:
-        poly_approx = cv2.approxPolyDP(elem, 0.01 * cv2.arcLength(elem, True), True)
-        cv2.drawContours(img_res, [elem], 0, (0, 0, 255), 1)
-    
-
-    cv2.imshow("Img",thresh)
-    cv2.waitKey(0)
+    # Uso de contornos y umbralizado para la detección de formas
+    #_, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_OTSU)
+    #cont, hier = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    #newborns = []
+    #for ind, elem in enumerate(cont[1:]):
+    #    
+    #    # Hierarchy [Next, Previous, First_Child, Parent]
+    #    #poly_approx = cv2.approxPolyDP(elem, 0.01 * cv2.arcLength(elem, True), True)
+    #    if hier[0][ind][3] == 0:
+    #        print("Hierarchy: ", hier[0][ind], "Len contour ", len(elem))
+    #        cv2.drawContours(img_res, [elem], 0, (0, 0, 255), 1)
+    #cv2.imshow("Img",img_res)
+    #cv2.waitKey(0)
+    H.hough_lines(gray)
