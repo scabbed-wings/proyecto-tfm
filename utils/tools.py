@@ -2,6 +2,7 @@ from random import getrandbits, choice
 import numpy as np
 import utils.globals as gb
 import utils.position_rules as pr
+import pandas as pd
 
 def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
@@ -148,3 +149,32 @@ def set_styles():
         conn_style = "gr15"
     
     return line_type_rel, line_type_attr, obj_style, conn_style
+
+def px_pos(cm_pos):
+    x_px = int((cm_pos[0] / gb.WIDTH) * gb.IM_WIDTH)
+    y_px = int((cm_pos[1] / gb.HEIGHT) * gb.IM_HEIGHT)
+    w_px = int(((cm_pos[2] / gb.WIDTH)  * gb.IM_WIDTH) * 2)   
+    h_px = int(((cm_pos[3] / gb.HEIGHT) * gb.IM_HEIGHT) * 2)
+
+    return [x_px, y_px, w_px, h_px]
+
+def create_labels(ent_atr, rel, name_file):
+    labels = [] # Formato: x, y, w, h, clase
+    cols = ['x', 'y', 'width', 'height', 'class']
+    for elem in ent_atr:
+        ent = px_pos([elem[0], elem[1], elem[3], elem[4]])
+        ent.append(0)
+        labels.append(ent)
+        if len(elem[2]) > 0:
+            for elem2 in elem[2]:
+                atr = px_pos([elem2[0], elem2[1], elem2[2], elem2[3]])
+                atr.append(1)
+                labels.append(atr)
+    
+    for elem in rel:
+        rel = px_pos([elem[0], elem[1], elem[2], elem[3]])
+        rel.append(2)
+        labels.append(rel)
+
+    df = pd.DataFrame(labels, columns=cols, dtype = int)
+    df.to_csv(name_file, sep=";")

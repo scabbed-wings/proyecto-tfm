@@ -3,8 +3,17 @@ import random as rnd
 import utils.globals as gb
 from utils.position_rules import init_diag_vals
 
-
 def pos_atr(ind, atr, w_ent, mod_h, mod_v):
+    """
+    Get the positions of the attributes related to an entity
+
+    :param ind: Index position of the entity
+    :param atr: Atribute list
+    :param w_ent: Width of the entity
+    :param mod_h: Horizontal position modifier of the entity
+    :param mod_v: Vertical position modifier of the entity
+    :return: list of position and dimension of the atribute and maximum width of the atributes
+    """ 
     atr_pos, x, y = [], 0, 0
     h_atr, w_atr = size_object(atr[0], "atr")
     max_w, max_h4, h4_saved = w_atr, 0, 0
@@ -44,6 +53,13 @@ def pos_atr(ind, atr, w_ent, mod_h, mod_v):
     return atr_pos, max_w
 
 def pos_ent(ent_atr, rel):
+    """
+    Get the positions of the entities
+
+    :param ent_atr: Iist of entities and its atributes
+    :param rel: List of relations between entities
+    :return: list of position and dimension of the entities and it's atributes
+    """ 
     ent_pos = []
     inds = rnd.sample(range(0, 5), len(ent_atr))
     for elem in ent_atr:
@@ -86,6 +102,16 @@ def pos_ent(ent_atr, rel):
     return ent_pos
 
 def pos_rel_relx(num_id1, ind_pos1, pos, w_rel, h_rel): #Posición para relaciones reflexivas
+    """
+    Get the positions of the attributes related to an entity
+
+    :param id1: Index position of the entity
+    :param ind_pos1: Index position of the entity in the list
+    :param pos: List of positions of atributes and entities
+    :param w_rel: Width of the relation object
+    :param h_rel: Height of the relation object
+    :return: list of position and dimension of the atribute and maximum width of the atributes
+    """ 
     x_rel, y_rel = gb.OBJ_SPACE, gb.OBJ_SPACE
     conn_1, conn_2, gp  = [0] * 4, [0] * 4, [0] * 4 # 1: Conexion entidad relacion 2: Conexion relacion entidad
     pos_card_1, pos_card_2 = [0] * 2, [0] * 2

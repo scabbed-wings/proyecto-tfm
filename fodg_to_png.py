@@ -3,7 +3,7 @@ import utils.ent_model_creator as EMC
 import utils.ent_model_positions as EMP
 import os
 import utils.lexical_model as LM
-from utils.tools import rel_by_pos, init_control_flags, set_styles
+from utils.tools import rel_by_pos, init_control_flags, set_styles, create_labels
 
 def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     #l = EMC.num_ent_atr(5, 3)
@@ -17,7 +17,14 @@ def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     #print("Posiciones: ", obj_pos)
     ltr, lta, obs, conn_s = set_styles()
     fin_text, num_id, num_comp = EMC.write_ent_atr(l, obj_pos, obs, conn_s, lta)
-    rel_text = EMC.write_relations(rel, obj_pos, num_id, num_comp, l, obs, conn_s, ltr)
+    rel_text, rel_pos = EMC.write_relations(rel, obj_pos, num_id, num_comp, l, obs, conn_s, ltr)
+
+
+    path_csv = f'''{folder_img}/img{num_file}_labels.csv'''
+    if os.path.exists(path_csv):
+        os.remove(path_csv)
+    create_labels(obj_pos, rel_pos, path_csv)
+
     cont_text = fin_text + rel_text
     cont_text += '''\n</draw:page>
     </office:drawing>
