@@ -6,24 +6,23 @@ from collections import defaultdict
 def hough_grad(gray):
     dx = cv2.Sobel(gray, cv2.CV_32F, dx=1, dy=0, ksize=5)
     dy = cv2.Sobel(gray, cv2.CV_32F, dx=0, dy=1, ksize=5)
-    grad = np.arctan2(dy, dx) +  np.pi
+    grad = np.arctan2(dy, dx) * 180 / np.pi
 
-    plt.clf()
-    fig = plt.figure()
-    fig.add_subplot(1,3,1)
-    plt.title("DX")
-    plt.imshow(dx)
-    
-
-    fig.add_subplot(1,3,2)
-    plt.title("DY")
-    plt.imshow(dy)
-
-    fig.add_subplot(1,3,3)
-    plt.title("Gradient")
-    plt.imshow(grad)
-
-    plt.show()
+    #plt.clf()
+    #fig = plt.figure()
+    #fig.add_subplot(1,3,1)
+    #plt.title("DX")
+    #plt.imshow(dx)
+#
+    #fig.add_subplot(1,3,2)
+    #plt.title("DY")
+    #plt.imshow(dy)
+#
+    #fig.add_subplot(1,3,3)
+    #plt.title("Gradient")
+    #plt.imshow(grad)
+#
+    #plt.show()
     return grad
 
 def r_table(canny, centre):
@@ -31,11 +30,10 @@ def r_table(canny, centre):
     r_table = defaultdict(list)
     for (i, j), value in np.ndenumerate(canny):
         if value:
-            r = np.sqrt(((centre[0] - i) ** 2) + (centre[1] - j) ** 2)
-            alpha = np.arctan2(i - centre[0], j - centre[1]) + np.pi
-            ind = grad[i,j] / (2 * np.pi)
+            r = (centre[0] - i, centre[1] - j)
+            ind = grad[i,j]
             # print((i,j), " Valor: ", value, " Gradiente: ", grad[i, j])
-            r_table[ind].append((r, alpha))
+            r_table[ind].append(r)
     return r_table
 
 def accum_grads(r_t, canny):
@@ -43,9 +41,9 @@ def accum_grads(r_t, canny):
     grad = hough_grad(canny)
     for (i,j), value in np.ndenumerate(canny):
         if value:
-            ind = grad[i,j] / (2 * np.pi)
-            for r, alpha in r_t[ind]:
-                accum_i, accum_j = int(i + r * np.sin(alpha)), int(j + r * np.cos(alpha))
+            ind = grad[i,j]
+            for r in r_t[ind]:
+                accum_i, accum_j = int(i + r[0]), int(j + r[1])
                 if accum_i < accum.shape[0] and accum_j < accum.shape[1]:
                     #print("Accum_i:", accum_i, " Accum_j: ", accum_j)
                     accum[accum_i, accum_j] += 1
@@ -62,7 +60,12 @@ def hough_closure(im, temp):
     gray_temp = cv2.cvtColor(temp, cv2.COLOR_BGR2GRAY)
     canny_im = cv2.Canny(gray_im, 10, 50)
     canny_temp = cv2.Canny(gray_temp, 10, 50)
-    centre = (gray_im.shape[0]/2, gray_im.shape[1]/2)
+    centre = (gray_temp.shape[0]/2, gray_temp.shape[1]/2)
+
+    kernel = np.ones((3,3), np.uint8)
+    canny_im = cv2.morphologyEx(canny_im, cv2.MORPH_CROSS, kernel)
+    cv2.imshow("Canny_temp", canny_im)
+    cv2.waitKey(0)
     
     r = r_table(canny_temp, centre)
     accum = accum_grads(r, canny_im)
@@ -89,29 +92,35 @@ def create_fig(temp, im_s, accum):
     plt.title("Deteccion")
     plt.imshow(im_s)
 
-    top = n_max(accum, 50)
+    top = n_max(accum, 500)
 
     # print(top)
 
-    y_points = [pt[1][0] for pt in top]
-    x_points = [pt[1][1] for pt in top]
+    y_points = [pt[1][1] for pt in top]
+    x_points = [pt[1][0] for pt in top]
     plt.scatter(y_points, x_points, marker='o', color='r')
     plt.show()
 
-def test_hough(temp_path, im_path):
-    im = cv2.imread(im_path)
-    temp = cv2.imread(temp_path)
-    accum = hough_closure(im, temp)
+def create_templates(paths):
+    temp_list = []
+    for elem in paths:
+        new_temp = cv2.imread(elem)
+        temp_list.append(new_temp)
+    return temp_list
 
-    create_fig(temp, im, accum)
+def test_hough(temp_list, im_path):
+    im = cv2.imread(im_path)
+    #princ_accum = np.zeros(im.shape[:-1])
+    for temp_path in temp_list:
+        temp = cv2.imread(temp_path)
+        accum = hough_closure(im, temp)
+        #princ_accum += accum
+        create_fig(temp, im, accum)
 
 
 if __name__ == "__main__":
-    path_im = "img/img1.png"
-    path_temp = "utils/detector/ellipse_xl.png"
-    test_hough(path_temp, path_im)
+    #path_im = "utils/detector/prueba.png"
+    path_im = "img/img30.png"
+    paths_temp = ["utils/detector/rhombus_xl.png", "utils/detector/rhombus.png"]
+    test_hough(paths_temp, path_im)
     
-       
-    # plt.imshow(grad, cmap='gray')
-    # plt.show()
-
