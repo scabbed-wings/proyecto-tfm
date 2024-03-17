@@ -108,7 +108,7 @@ def test_hough(temp_path, im_path):
 
 if __name__ == "__main__":
     path_im = "img/img1.png"
-    path_temp = "utils/detector/ellipse_xl.png"
+    path_temp = "utils/detector/ellipse2.png"
     test_hough(path_temp, path_im)
     
        
