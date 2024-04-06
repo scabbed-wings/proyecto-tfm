@@ -1,8 +1,9 @@
 /tfm
-/img
-/fodg
-/utils/__pycache__
-/utils/detector/__pycache__
+/dataset/img
+/dataset/fodg
+/dataset/utils/__pycache__
+/ght/utils/detector/__pycache__
+/ght/utils/__pycache__
 /prueba_dibujo.fodg
 /prueba_py.fodg
 /utils/model_positions_copy.py

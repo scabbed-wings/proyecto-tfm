@@ -10,13 +10,13 @@ def ght_det(im, mode, alg):
     #gray = cv2.resize(gray, new_shape)
     #img_res = cv2.resize(im, new_shape)
     
-    canny_im = cv2.Canny(gray, 100, 200)
+    canny_im = cv2.Canny(gray, 10, 50)
     temp = 0
 
     if mode == "r":
         temp = cv2.imread("utils/detector/rect.png", cv2.IMREAD_GRAYSCALE)
     elif mode == "e":
-        temp = cv2.imread("utils/detector/ellipse.png", cv2.IMREAD_GRAYSCALE)
+        temp = cv2.imread("utils/detector/ellipse2.png", cv2.IMREAD_GRAYSCALE)
     else:
         temp = cv2.imread("utils/detector/rhombus.png", cv2.IMREAD_GRAYSCALE)
     
@@ -28,11 +28,25 @@ def ght_det(im, mode, alg):
     #plt.show()
     if guil:
         det = cv2.createGeneralizedHoughGuil()
+        det.setMinDist(10)
+        det.setLevels(90)
+        det.setDp(2)
+        det.setMaxBufferSize(1000)
+        det.setCannyLowThresh(10)
+        det.setCannyHighThresh(50)
     else:
         det = cv2.createGeneralizedHoughBallard()
+        det.setMinDist(10)
+        det.setLevels(90)
+        det.setDp(1)
+        det.setMaxBufferSize(1000)
+        det.setCannyLowThresh(10)
+        det.setCannyHighThresh(50)
+    
     det.setTemplate(temp)
 
     pos, votes = det.detect(canny_im)
+    #print("Pos: ", pos, " Votes: ", votes)
     for i in range(pos.shape[1]):
         if votes[0][i][0] > 300:
             pos_xy = pos[0][i][0:2]

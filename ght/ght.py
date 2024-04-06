@@ -13,15 +13,15 @@ def hough_grad(gray):
     #fig.add_subplot(1,3,1)
     #plt.title("DX")
     #plt.imshow(dx)
-#
+
     #fig.add_subplot(1,3,2)
     #plt.title("DY")
     #plt.imshow(dy)
-#
+
     #fig.add_subplot(1,3,3)
     #plt.title("Gradient")
     #plt.imshow(grad)
-#
+
     #plt.show()
     return grad
 
@@ -43,7 +43,7 @@ def accum_grads(r_t, canny):
         if value:
             ind = grad[i,j]
             for r in r_t[ind]:
-                accum_i, accum_j = int(i + r[0]), int(j + r[1])
+                accum_i, accum_j = int(i + r[0]), int(j + r[1]) 
                 if accum_i < accum.shape[0] and accum_j < accum.shape[1]:
                     #print("Accum_i:", accum_i, " Accum_j: ", accum_j)
                     accum[accum_i, accum_j] += 1
@@ -64,8 +64,6 @@ def hough_closure(im, temp):
 
     kernel = np.ones((3,3), np.uint8)
     canny_im = cv2.morphologyEx(canny_im, cv2.MORPH_CROSS, kernel)
-    cv2.imshow("Canny_temp", canny_im)
-    cv2.waitKey(0)
     
     r = r_table(canny_temp, centre)
     accum = accum_grads(r, canny_im)
@@ -121,6 +119,6 @@ def test_hough(temp_list, im_path):
 if __name__ == "__main__":
     #path_im = "utils/detector/prueba.png"
     path_im = "img/img30.png"
-    paths_temp = ["utils/detector/rhombus_xl.png", "utils/detector/rhombus.png"]
+    paths_temp = ["utils/detector/ellipse_xl.png", "utils/detector/ellipse2.png"]
     test_hough(paths_temp, path_im)
     

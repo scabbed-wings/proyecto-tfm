@@ -4,7 +4,7 @@ import utils.detector.hough as H
 import matplotlib.pyplot as plt
 
 file_list = glob("img/*.png")
-alg = "bal"
+alg = "guil"
 for elem in file_list[:4]:
     img = cv2.imread(elem)
     
