@@ -160,7 +160,7 @@ def px_pos(cm_pos):
 
 def create_labels(ent_atr, rel, name_file):
     labels = [] # Formato: x, y, w, h, clase
-    cols = ['x', 'y', 'width', 'height', 'class']
+    cols = ['x_min', 'y_min', 'x_max', 'y_max', 'class']
     for elem in ent_atr:
         ent = px_pos([elem[0], elem[1], elem[3], elem[4]])
         ent.append(0)

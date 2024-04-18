@@ -43,11 +43,11 @@ def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     proc2 = subp.run(string, shell=True)
 
 if __name__ == "__main__":
-    f = open("head.xml", "r", encoding="UTF-8")
+    f = open("data_generator/head.xml", "r", encoding="UTF-8")
     contents = f.read()
     f.close()
-    path_folder_files = f'''fodg'''
-    path_folder_img = f'''img'''
+    path_folder_files = f'''data_generator/fodg'''
+    path_folder_img = f'''data_generator/img'''
     if not os.path.isdir(path_folder_files):
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
