@@ -20,7 +20,7 @@ def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     rel_text, rel_pos = EMC.write_relations(rel, obj_pos, num_id, num_comp, l, obs, conn_s, ltr)
 
 
-    path_csv = f'''{folder_img}/img{num_file}_labels.csv'''
+    path_csv = f'''{folder_img}/img{num_file}.csv'''
     if os.path.exists(path_csv):
         os.remove(path_csv)
     create_labels(obj_pos, rel_pos, path_csv)

@@ -156,7 +156,7 @@ def px_pos(cm_pos):
     w_px = int(((cm_pos[2] / gb.WIDTH)  * gb.IM_WIDTH) * 2)   
     h_px = int(((cm_pos[3] / gb.HEIGHT) * gb.IM_HEIGHT) * 2)
 
-    return [x_px, y_px, w_px, h_px]
+    return [x_px, y_px, x_px + w_px, y_px + h_px]
 
 def create_labels(ent_atr, rel, name_file):
     labels = [] # Formato: x, y, w, h, clase
