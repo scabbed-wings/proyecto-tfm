@@ -31,7 +31,7 @@ class BoundingBoxDataset(Dataset):
 
 
 def get_mean(img_list):
-    mean = np.array([0.,0., 0.])
+    mean = np.array([0., 0., 0.])
     numSamples = len(img_list)
     for img_file in img_list:
         img = cv2.imread(img_file)
@@ -39,7 +39,7 @@ def get_mean(img_list):
         img = img.astype(float) / 255.
         mean += np.mean(img)
         for j in range(3):
-            mean[j] += np.mean(img[:,:,j])
+            mean[j] += np.mean(img[:, :, j])
     return (mean / numSamples)
 
 
@@ -54,24 +54,8 @@ def get_mean_std(dataset_folder):
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         im = im.astype(float) / 255.
         for j in range(3):
-            stdTemp[j] += ((im[:,:,j] - mean[j])**2).sum()/(im.shape[0]*im.shape[1])
+            stdTemp[j] += ((im[:, :, j] - mean[j])**2).sum() / (im.shape[0] * im.shape[1])
         
     std = np.sqrt(stdTemp / numSamples)
 
     return torch.from_numpy(mean), torch.from_numpy(std)
-
-
-if __name__ == "__main__":
-    transform = transforms.Compose([
-        transforms.Resize((640, 640)),
-        transforms.ToTensor(),
-    ])
-
-    dataset = BoundingBoxDataset('tu_archivo.csv', transform=transform)
-    dataloader = DataLoader(dataset, batch_size=2, shuffle=True)
-
-    for images, targets in dataloader:
-        # Ahora puedes usar images y targets en tu modelo de PyTorch
-        print(images.shape)
-        print(targets['boxes'])
-        print(targets['labels'])
