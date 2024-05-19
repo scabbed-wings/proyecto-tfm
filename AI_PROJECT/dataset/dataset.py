@@ -4,8 +4,8 @@ import torch
 import pandas as pd
 import cv2
 from sklearn.model_selection import train_test_split
-from utils.custom_dataset import get_mean_std, BoundingBoxDataset
-from utils.transformations import get_transforms
+from dataset.utils.custom_dataset import get_mean_std, BoundingBoxDataset
+from dataset.utils.transformations import get_transforms
 from torch.utils.data import DataLoader
 
 OG_WIDTH, OG_HEIGHT = 1181, 1545
@@ -24,7 +24,7 @@ def visualize_new_annotations(image_list, bboxes, classes,
                               new_width: int, new_height: int):
     for id, image_name in enumerate(image_list):
         path = Path(image_name).with_suffix(".png")
-        image = cv2.imread(str(path))
+        image = cv2.imread(fr"{str(path)}")
         image = cv2.resize(image, (new_width, new_height))
         for i in range(bboxes[id].shape[0]):
             print(bboxes[id][i])
@@ -72,16 +72,20 @@ def get_torch_dataloader(batch_size=32, img_width=640, img_height=640,
                                            'y_min', 'y_max']].values)
     print("Getting normalized vectors")
     mean, std = get_mean_std(dataset)
+    print(mean, std)
     train_transform, test_transform = get_transforms(img_height=img_height,
-                                                     img_width=img_width,
-                                                     mean=mean, std=std)
+                                                      img_width=img_width,
+                                                      mean=mean, std=std)
     print("Creating train and test sets")
     trainset = BoundingBoxDataset((train_images, train_labels, train_bbox),
                                   transforms=train_transform)
     testset = BoundingBoxDataset((test_images, test_labels, test_bbox),
                                  transforms=test_transform)
     print("Creating dataloader objects")
-    train_data_loader = DataLoader(trainset, batch_size, shuffle=True)
-    test_data_loader = DataLoader(testset, batch_size, shuffle=True)
+    train_data_loader = DataLoader(trainset, batch_size, shuffle=True, pin_memory=True, num_workers=2)
+    test_data_loader = DataLoader(testset, batch_size, shuffle=True, pin_memory=True, num_workers=2)
     
-    return train_data_loader, test_data_loader
+    return train_data_loader, test_data_loader, len(train_set), len(test_set)
+
+if __name__ == "__main__":
+    get_torch_dataloader()

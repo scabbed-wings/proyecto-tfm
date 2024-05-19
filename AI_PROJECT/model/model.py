@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class ObjectDetection(nn.Module): 
-    def __init__(self, in_channels=3, out_channels_cnn=3, bboxes=4):
+    def __init__(self, in_channels=1, out_channels_cnn=3, bboxes=4):
         super().__init__()
         hidden_channel1 = 32
         hidden_channel2 = 64
@@ -42,8 +42,8 @@ class ObjectDetection(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.relu = nn.ReLU()
         self.fc = nn.Flatten()
-        self.cnn_layer = nn.Linear(7*7*128, out_channels_cnn)
-        self.regressor = nn.Linear(7*7*128, bboxes)
+        self.cnn_layer = nn.Linear(24576, out_channels_cnn)
+        self.regressor = nn.Linear(24576, bboxes)
 
     def cnn_layers(self, x):
         x = self.relu(x)
@@ -73,7 +73,6 @@ class ObjectDetection(nn.Module):
         x = self.cnn_layers(x)
 #         print(x.shape)
         x = self.fc(x)
-#         print(x.shape)
         return x
     
     def forward(self, x):

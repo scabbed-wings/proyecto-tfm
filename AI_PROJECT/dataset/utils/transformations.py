@@ -14,6 +14,7 @@ def get_transforms(img_height, img_width, mean, std):
         transforms.ToPILImage(),
         transforms.Resize((img_height, img_width)),
         transforms.ToTensor(),
-        transforms.Normalize(mean, std)])
+        transforms.Normalize(mean, std)
+    ])
 
     return train_transform, test_transform
