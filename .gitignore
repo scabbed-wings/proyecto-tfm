@@ -1,6 +1,7 @@
 /tfm
 /data_generator/img
 /data_generator/fodg
+/data_generator/img_fractional
 /data_generator/utils/__pycache__
 /ght/utils/detector/__pycache__
 /ght/utils/__pycache__

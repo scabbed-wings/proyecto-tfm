@@ -47,7 +47,7 @@ if __name__ == "__main__":
     contents = f.read()
     f.close()
     path_folder_files = f'''data_generator/fodg'''
-    path_folder_img = f'''data_generator/img'''
+    path_folder_img = f'''data_generator/img_fractional'''
     if not os.path.isdir(path_folder_files):
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):

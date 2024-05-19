@@ -158,23 +158,31 @@ def px_pos(cm_pos):
 
     return [x_px, y_px, x_px + w_px, y_px + h_px]
 
+def px_pos_fractional(cm_pos):
+    aux = px_pos(cm_pos)
+
+    return [aux[0]/gb.IM_WIDTH, aux[1]/gb.IM_HEIGHT, aux[2]/gb.IM_WIDTH, aux[3]/gb.IM_HEIGHT]
+
 def create_labels(ent_atr, rel, name_file):
     labels = [] # Formato: x, y, w, h, clase
     cols = ['x_min', 'y_min', 'x_max', 'y_max', 'class']
     for elem in ent_atr:
-        ent = px_pos([elem[0], elem[1], elem[3], elem[4]])
+        # ent = px_pos([elem[0], elem[1], elem[3], elem[4]])
+        ent = px_pos_fractional([elem[0], elem[1], elem[3], elem[4]])
         ent.append(0)
         labels.append(ent)
         if len(elem[2]) > 0:
             for elem2 in elem[2]:
-                atr = px_pos([elem2[0], elem2[1], elem2[2], elem2[3]])
+                # atr = px_pos([elem2[0], elem2[1], elem2[2], elem2[3]])
+                atr = px_pos_fractional([elem2[0], elem2[1], elem2[2], elem2[3]])
                 atr.append(1)
                 labels.append(atr)
     
     for elem in rel:
-        rel = px_pos([elem[0], elem[1], elem[2], elem[3]])
+        # rel = px_pos([elem[0], elem[1], elem[2], elem[3]])
+        rel = px_pos_fractional([elem[0], elem[1], elem[2], elem[3]])
         rel.append(2)
         labels.append(rel)
 
-    df = pd.DataFrame(labels, columns=cols, dtype = int)
+    df = pd.DataFrame(labels, columns=cols)
     df.to_csv(name_file, sep=";")
