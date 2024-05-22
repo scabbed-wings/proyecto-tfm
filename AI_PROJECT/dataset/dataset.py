@@ -2,10 +2,11 @@ from pathlib import Path
 from glob import glob
 import torch
 import pandas as pd
+import numpy as np
 import cv2
 from sklearn.model_selection import train_test_split
-from dataset.utils.custom_dataset import get_mean_std, BoundingBoxDataset
-from dataset.utils.transformations import get_transforms
+from dataset.utils.custom_dataset import BoundingBoxDataset
+from dataset.utils.transformations import get_transforms, get_mean_std
 from torch.utils.data import DataLoader
 
 OG_WIDTH, OG_HEIGHT = 1181, 1545
@@ -34,8 +35,23 @@ def visualize_new_annotations(image_list, bboxes, classes,
         cv2.imshow("Annotations", image)
         cv2.waitKey(0)
 
+def visualize_images(image, bboxes, labels):
+    array = image.numpy()
+    array = np.transpose(array, (1,2,0))
+    array = cv2.cvtColor(array, cv2.COLOR_GRAY2RGB)
+    bboxes = bboxes.numpy()
+    labels =labels.numpy()
+    for i in range(bboxes.shape[0]):
+            new_bboxes = 300 * bboxes[i]
+            print(new_bboxes)
+            color = color_selector(int(labels[i]))
+            cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
+                          (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
+    cv2.imshow("TORCH IMAGE", array)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-def process_data(dataset_folder: str, 
+def process_data_box_unit(dataset_folder: str, 
                  new_width: int = 640, new_height: int = 640):
     image_list = glob(dataset_folder + "/*.png")
     output_list = []
@@ -52,10 +68,24 @@ def process_data(dataset_folder: str,
                                               "y_max", "class", "image_path"])
 
 
+def process_data_bboxes(dataset_folder: str):
+    image_list = glob(dataset_folder + "/*.png")
+    output_list = []
+    for file in image_list:
+        img_path = Path(file)
+        csv_path = img_path.with_suffix(".csv")
+        abs_path = img_path.resolve()
+        annotations = pd.read_csv(csv_path, sep=";", index_col=0)
+        bboxes = annotations[["x_min", "y_min", "x_max", "y_max"]].values
+        labels = annotations["class"].values
+        output_list.append([abs_path, bboxes, labels])
+    return pd.DataFrame(output_list, columns=["img_path", "bboxes", "labels"])
+
+
 def get_torch_dataloader(batch_size=32, img_width=640, img_height=640,
                          dataset="data_generator/img"):
     print("Processing data")
-    df = process_data(dataset)
+    df = process_data_box_unit(dataset)
     print("Splitting data")
     train_set, test_set = train_test_split(df, test_size=0.1,
                                            shuffle=True, stratify=df["class"])

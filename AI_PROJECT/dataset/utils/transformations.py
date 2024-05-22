@@ -2,6 +2,7 @@ from torchvision import transforms
 import cv2
 from glob import glob
 import numpy as np
+import torch
 
 def get_transforms(img_height, img_width, mean, std):
 
@@ -46,3 +47,15 @@ def get_mean_std(dataset_folder):
         stdTemp += ((im - mean)**2).sum() / (im.shape[0] * im.shape[1])
     std = np.sqrt(stdTemp / numSamples)
     return mean, std
+
+
+def collate_function(batch):
+    imgs = list()
+    bboxes = list()
+    labels = list()
+    for element in batch:
+        imgs.append(element[0])
+        bboxes.append(element[1])
+        labels.append(element[2])
+    imgs = torch.stack(imgs, dim=0)
+    return imgs, bboxes, labels
