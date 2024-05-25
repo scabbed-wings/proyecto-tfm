@@ -51,11 +51,13 @@ def get_mean_std(dataset_folder):
 
 def collate_function(batch):
     imgs = list()
-    bboxes = list()
-    labels = list()
+    targets = list()
+    #bboxes = list()
+    #labels = list()
     for element in batch:
         imgs.append(element[0])
-        bboxes.append(element[1])
-        labels.append(element[2])
+        targets.append(element[1])
+        #bboxes.append(element[1])
+        #labels.append(element[2])
     imgs = torch.stack(imgs, dim=0)
-    return imgs, bboxes, labels
+    return imgs, targets #bboxes, labels

@@ -43,9 +43,12 @@ class CustomBBoxDataset(Dataset):
     def __getitem__(self, idx):
         image = Image.open(self.tensors.iloc[idx, 0]).convert('L')
         boxes = torch.FloatTensor(self.tensors.iloc[idx, 1])
-        labels = torch.FloatTensor(self.tensors.iloc[idx, 2])
+        labels = torch.IntTensor(self.tensors.iloc[idx, 2]).to(torch.int64)
 
         image, boxes, labels = transform(image, boxes, labels, split=self.split)
+        targets = dict()
+        targets['boxes'] = boxes
+        targets['labels'] = labels
 
-        return image, boxes, labels
+        return image, targets
         

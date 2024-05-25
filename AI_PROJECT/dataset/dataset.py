@@ -35,16 +35,17 @@ def visualize_new_annotations(image_list, bboxes, classes,
         cv2.imshow("Annotations", image)
         cv2.waitKey(0)
 
-def visualize_images(image, bboxes, labels):
+def visualize_images(image, bboxes, labels, inference: bool = False):
     array = image.numpy()
     array = np.transpose(array, (1,2,0))
     array = cv2.cvtColor(array, cv2.COLOR_GRAY2RGB)
     bboxes = bboxes.numpy()
     labels =labels.numpy()
     for i in range(bboxes.shape[0]):
-            new_bboxes = 300 * bboxes[i]
+            
+            new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
             print(new_bboxes)
-            color = color_selector(int(labels[i]))
+            color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
             cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
                           (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
     cv2.imshow("TORCH IMAGE", array)
@@ -68,7 +69,7 @@ def process_data_box_unit(dataset_folder: str,
                                               "y_max", "class", "image_path"])
 
 
-def process_data_bboxes(dataset_folder: str):
+def process_data_bboxes(dataset_folder: str, not_background: bool = True):
     image_list = glob(dataset_folder + "/*.png")
     output_list = []
     for file in image_list:
@@ -77,7 +78,7 @@ def process_data_bboxes(dataset_folder: str):
         abs_path = img_path.resolve()
         annotations = pd.read_csv(csv_path, sep=";", index_col=0)
         bboxes = annotations[["x_min", "y_min", "x_max", "y_max"]].values
-        labels = annotations["class"].values
+        labels = annotations["class"].values + 1 if not_background else annotations["class"].values
         output_list.append([abs_path, bboxes, labels])
     return pd.DataFrame(output_list, columns=["img_path", "bboxes", "labels"])
 
