@@ -3,7 +3,7 @@ import random
 import dataset.utils.transform.transform_operations as TO
 
 
-def transform(images, bboxes, labels, split):
+def transform(images, bboxes, labels, split, dims=(300, 300)):
     mean = (0.9844960020963516,)  
     std = (0.11468420904814396,)
     new_image = images
@@ -32,12 +32,12 @@ def transform(images, bboxes, labels, split):
             new_image, new_bboxes = TO.flip(new_image, new_bboxes)
 
     # Resize image to (300, 300) - this also converts absolute boundary coordinates to their fractional form
-    new_image, new_bboxes = TO.resize(new_image, new_bboxes, dims=(300, 300))
+    new_image, new_bboxes = TO.resize(new_image, new_bboxes, dims)
 
     # Convert PIL image to Torch tensor
     new_image = FT.to_tensor(new_image)
 
     # Normalize by mean and standard deviation of ImageNet data that our base VGG was trained on
-    new_image = FT.normalize(new_image, mean=mean, std=std)
+    # new_image = FT.normalize(new_image, mean=mean, std=std)
 
     return new_image, new_bboxes, new_labels

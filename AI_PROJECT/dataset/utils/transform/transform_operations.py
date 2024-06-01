@@ -3,7 +3,7 @@ import random
 import torch
 from dataset.utils.transform.utils import find_jaccard_overlap
 
-def resize(image, boxes, dims=(300, 300), return_percent_coords=True):
+def resize(image, boxes, dims=(300, 300), return_percent_coords=False):
     """
     Resize image. For the SSD300, resize to (300, 300).
 

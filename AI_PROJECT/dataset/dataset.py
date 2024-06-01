@@ -44,7 +44,7 @@ def visualize_images(image, bboxes, labels, inference: bool = False):
     for i in range(bboxes.shape[0]):
             
             new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
-            print(new_bboxes)
+            #print(new_bboxes)
             color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
             cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
                           (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)

@@ -5,6 +5,7 @@ import torch.utils.data
 import torch
 import numpy as np
 from dataset.utils.transform.transform import transform
+from model.utils import get_cuda_device
 
 
 class BoundingBoxDataset(Dataset):
@@ -30,9 +31,11 @@ class BoundingBoxDataset(Dataset):
 
 
 class CustomBBoxDataset(Dataset):
-    def __init__(self, tensors, split):
+    def __init__(self, tensors, split, size=(300,300)):
         self.tensors = tensors
         self.split = split.upper()
+        self.device = get_cuda_device()
+        self.dims = size
 
         assert self.split in {'TRAIN', 'TEST'}
 
@@ -45,7 +48,7 @@ class CustomBBoxDataset(Dataset):
         boxes = torch.FloatTensor(self.tensors.iloc[idx, 1])
         labels = torch.IntTensor(self.tensors.iloc[idx, 2]).to(torch.int64)
 
-        image, boxes, labels = transform(image, boxes, labels, split=self.split)
+        image, boxes, labels = transform(image, boxes, labels, split=self.split, dims=self.dims)
         targets = dict()
         targets['boxes'] = boxes
         targets['labels'] = labels

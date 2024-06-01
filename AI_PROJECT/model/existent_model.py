@@ -7,35 +7,36 @@ from model.utils import get_cuda_device, Averager
 from pathlib import Path
 from dataset.dataset import visualize_images
 from dataset.utils.transformations import collate_function
+from torchmetrics.detection import MeanAveragePrecision
+import os
 
-def checkpoint(model, filename):
+def checkpoint(model, filedir, epoch):
+    filename = os.path.join(filedir, f"model_{epoch}.pth")
     torch.save(model.state_dict(), filename)
 
 
-def train_model(train_data_loader, num_classes: int = 4, save_checkpoint = "AI_PROJECT/output/model/model.pth" ):
-    model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights=None, weights_backbone=None)
+def train_model(train_data_loader, valid_data_loader,
+                model,
+                save_checkpoint = "AI_PROJECT/output/" ):
     device = get_cuda_device()
-    # get number of input features for the classifier
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
 
-    # replace the pre-trained head with a new one
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-
-    model.train()
+    
     model.to(device)
     params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.00001)
+    optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.001)
+    #optimizer = torch.optim.Adam(params, lr=0.001)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
-
-    num_epochs = 5
+    mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
+    num_epochs = 20
 
     loss_hist = Averager()
     itr = 1
 
     for epoch in range(num_epochs):
         loss_hist.reset()
-        train_dataloader = torch.utils.data.DataLoader(train_data_loader,8, shuffle=True, 
-                                    collate_fn=collate_function, pin_memory=True, num_workers=2)
+        train_dataloader = torch.utils.data.DataLoader(train_data_loader,128, shuffle=True,
+                                    collate_fn=collate_function, pin_memory=True, num_workers=4)
+        model.train()
         for images, targets in train_dataloader:
             
             images = list(image.to(device) for image in images)
@@ -55,21 +56,32 @@ def train_model(train_data_loader, num_classes: int = 4, save_checkpoint = "AI_P
                 print(f"Iteration #{itr} loss: {loss_value}")
 
             itr += 1
+
+        model.eval()
+        with torch.no_grad():
+            for images, valid_targets in valid_data_loader:
+                print("Validation images: ", len(images))
+                images = list(image.to(device) for image in images)
+                valid_targets = [{k: v.to(torch.device("cpu")) for k, v in t.items()} for t in valid_targets]
+                # new_valid_targets = valid_targets.copy()
+                # for item in new_valid_targets: print(item['labels'].shape)
+                # for item in new_valid_targets: item['scores'] = torch.ones(size=item['labels'].shape)
+                output = model(images)
+                output = [{k: v.to(torch.device("cpu")) for k, v in t.items()} for t in output]
+                mAP.update(preds=output, target=valid_targets)
+                metrics = mAP.compute()
+                print(metrics)
+            # update the learning rate
+            if lr_scheduler is not None:
+                lr_scheduler.step()
+            if (epoch + 1) % 10 == 0:
+                checkpoint(model,save_checkpoint, epoch=epoch+1)
+
+            print(f"Epoch #{epoch} loss: {loss_hist.value}")
         
-        # update the learning rate
-        if lr_scheduler is not None:
-            lr_scheduler.step()
-
-        print(f"Epoch #{epoch} loss: {loss_hist.value}")
-    checkpoint(model,save_checkpoint)
 
 
-def inference_test(weights_file, test_dataloader, num_classes=4):
-    model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained=False)
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
-
-    # replace the pre-trained head with a new one
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+def inference_test(weights_file, model, test_dataloader):
     model.load_state_dict(torch.load(weights_file))
     device = get_cuda_device()
     model.to(device)
@@ -83,5 +95,3 @@ def inference_test(weights_file, test_dataloader, num_classes=4):
             scores = output[ind]['scores'].data.cpu()
             new_image = image.data.cpu()
             visualize_images(new_image, boxes, labels, inference=True)
-
-
