@@ -1,13 +1,13 @@
 import torch
 import torchvision
 from dataset.load_dataset import get_torch_dataloader
-from model.existent_model import train_model, inference_test
+from model.existent_model import model_test_metrics
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.rpn import AnchorGenerator
 from torchvision.models.detection import FasterRCNN_MobileNet_V3_Large_FPN_Weights
 
-  
 if __name__ == "__main__":
+
     train_data_loader, valid_data_loader, test_data_loader = get_torch_dataloader(dataset_path="data_generator/img_fractional", 
                                                                                   dims=(500,500))
     model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(
@@ -15,7 +15,7 @@ if __name__ == "__main__":
         # get number of input features for the classifier
     model.rpn.score_thresh = 0.2
     model.rpn.nms_thresh = 0.8
-    model.roi_heads.detections_per_img = 150
+    model.roi_heads.detections_per_img = 60
     model.roi_heads.nms_thresh = 0.8
     model.roi_heads.score_thresh = 0.1
     #model.rpn._post_nms_top_n["testing"] = 1500
@@ -27,6 +27,4 @@ if __name__ == "__main__":
     num_classes = 4
     # replace the pre-trained head with a new one
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes,)
-    train_model(train_data_loader, valid_data_loader, model)
-    inference_test("AI_PROJECT\output\model\model.pth",model, test_data_loader)
-    # model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights=None, weights_backbone=None)
+    model_test_metrics("AI_PROJECT\output\model_10.pth",model, test_data_loader)

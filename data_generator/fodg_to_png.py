@@ -52,7 +52,7 @@ if __name__ == "__main__":
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
-    set_img = 10 # Numero de imágenes por cada grupo de entidades
+    set_img = 50 # Numero de imágenes por cada grupo de entidades
     num_img = 0
     for i in range(2,6):
         for j in range(set_img):

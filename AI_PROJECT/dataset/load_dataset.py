@@ -9,9 +9,9 @@ def get_torch_dataloader(dims, dataset_path="data_generator/img", not_background
     print("Processing data")
     df = process_data_bboxes(dataset_path, not_background)
     print("Splitting data")
-    train_set, test_set = train_test_split(df, test_size=0.1,
+    train_set, valid_set = train_test_split(df, test_size=0.1,
                                            shuffle=True)
-    train_set, valid_set = train_test_split(train_set, test_size=0.1, shuffle=True)
+    train_set, test_set = train_test_split(train_set, test_size=0.1, shuffle=True)
     train_set_obj = CustomBBoxDataset(train_set, "train", size=dims)
     valid_set_obj = CustomBBoxDataset(valid_set, "test", size=dims)
     test_set_obj = CustomBBoxDataset(test_set, split="test", size=dims)
