@@ -1,5 +1,6 @@
 import torch
 from torchvision.ops import box_iou
+import numpy as np
 
 def get_cuda_device():
     return torch.device('cuda' if torch.cuda.is_available() else "cpu")
@@ -27,9 +28,29 @@ class Averager:      ##Return the average loss
         self.iterations = 0.0
 
 
+def counter_metrics_per_label(num_classes, num_threhsolds):
+    '''Dictionary to store TP, FP and FN'''
+    counter = dict()
+    for i in range(1, num_classes + 1):
+        counter[i] = np.zeros(shape=(num_threhsolds, 3))
+    return counter
+
+
+def tp_fp_on_different_thresholds(pred_label, pred_score, num_classes, thresholds):
+    tp_fp_vector = counter_metrics_per_label(3, thresholds.shape[0])
+    for ind, threshold in enumerate(thresholds):
+        for id_class in range(1, num_classes + 1):
+            if pred_score > threshold and pred_label == id_class:
+                tp_fp_vector[id_class][ind,0] = 1
+            else:
+                tp_fp_vector[id_class][ind,1] = 1
+    return tp_fp_vector
+
+
 def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
+    class_thresholds = np.arange(start=0.0, step=0.05, stop=1.05)
+    thresholds_counter = counter_metrics_per_label(3, class_thresholds.shape[0])
     iou_matrix = box_iou(predictions["boxes"], groundtruth["boxes"])
-    fp, tp = 0, 0
     gt_found = []
     for num_row, row in enumerate(iou_matrix):
         greater_iou = row >= iou_threshold
@@ -40,15 +61,19 @@ def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
             for index in indexes:
                 #print("Number of box: ", num_row, " IOU with GT BOX: ", index.item())
                 pred_label = predictions["labels"][num_row]
+                pred_score = predictions["scores"][num_row]
                 gt_label = groundtruth["labels"][index.item()]
                 gt_found.append(index.item())
-                if pred_label == gt_label:
-                    tp += 1
-                else:
-                    fp += 1
+                pred_tp_fp = tp_fp_on_different_thresholds(pred_label, pred_score, 3, class_thresholds)
+                for key in thresholds_counter.keys():
+                    thresholds_counter[key] += pred_tp_fp[key]
         else:
-            fp += 1
+            for key in thresholds_counter.keys():
+                    thresholds_counter[key][:, 1] += 1
+
     gt_found = set(gt_found)
     fn_diff = len(groundtruth["boxes"]) - len(gt_found)
     fn = fn_diff if fn_diff >= 0 else 0
-    print("TP: ", tp, "\tFP: ", fp, "\tFN: ", fn)
+    for key in thresholds_counter.keys():
+        thresholds_counter[key][:, 2] += fn
+    
