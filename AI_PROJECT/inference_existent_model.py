@@ -23,7 +23,6 @@ if __name__ == "__main__":
     #model.transform.image_mean = [0.9844960020963516, 0.9844960020963516, 0.9844960020963516]
     #model.transform.image_std = [0.11468420904814396, 0.11468420904814396, 0.11468420904814396]
     in_features = model.roi_heads.box_predictor.cls_score.in_features
-    print(in_features)
     num_classes = 4
     # replace the pre-trained head with a new one
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes,)
