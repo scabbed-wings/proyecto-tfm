@@ -80,8 +80,8 @@ def create_precision_recall_curve(thresholds, thresholds_counter):
     plt.show()
     
 
-def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
-    class_thresholds = np.arange(start=0.0, step=0.05, stop=1.05)
+def calculate_metrics(predictions, groundtruth, class_thresholds, iou_threshold: float=0.5):
+    
     thresholds_counter = counter_metrics_per_label(3, class_thresholds.shape[0])
     iou_matrix = box_iou(predictions["boxes"], groundtruth["boxes"])
     gt_found = []
@@ -110,4 +110,4 @@ def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
     for key in thresholds_counter.keys():
         thresholds_counter[key][:, 2] += fn
     
-    create_precision_recall_curve(class_thresholds, thresholds_counter)
+    return thresholds_counter

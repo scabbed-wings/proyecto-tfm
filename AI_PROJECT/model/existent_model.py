@@ -3,12 +3,12 @@ import torch.utils
 import torch.utils.data
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from model.utils import get_cuda_device, Averager, calculate_metrics
-from pathlib import Path
+from model.utils import get_cuda_device, Averager, calculate_metrics, create_precision_recall_curve
 from dataset.dataset import visualize_images
 from dataset.utils.transformations import collate_function
 from torchmetrics.detection import MeanAveragePrecision
 import os
+import numpy as np
 
 def checkpoint(model, filedir, epoch):
     filename = os.path.join(filedir, f"model_{epoch}.pth")
@@ -98,17 +98,27 @@ def inference_test(weights_file, model, test_dataloader):
 
 
 def model_test_metrics(weights_file, model, test_dataloader):
+    metric_counter = 0
+    class_thresholds = np.arange(start=0.0, step=0.05, stop=1.05)
+    num_samples = 0
     model.load_state_dict(torch.load(weights_file))
     device = get_cuda_device()
     model.to(device)
     model.eval()
     for images, targets in test_dataloader:
         images = list(image.to(device) for image in images)
+        num_samples += len(images)
         output = model(images)
         for ind, image in enumerate(images):
             predictions = dict()
             predictions["boxes"] = output[ind]['boxes'].data.cpu()
             predictions["labels"] = output[ind]['labels'].data.cpu()
             predictions["scores"] = output[ind]['scores'].data.cpu()
-            calculate_metrics(predictions, targets[ind])
-            
+            if metric_counter == 0:
+                metric_counter = calculate_metrics(predictions, targets[ind], class_thresholds)
+            else:
+                new_values = calculate_metrics(predictions, targets[ind], class_thresholds)
+                for key in new_values.keys():
+                    metric_counter[key] += new_values[key]
+    
+    create_precision_recall_curve(class_thresholds, metric_counter)
