@@ -51,7 +51,7 @@ def pos_rel(num_id1, num_id2, ind_pos1, ind_pos2, pos, w_rel, h_rel):
     return x_rel, y_rel, conn_1, conn_2, pos_card_1, pos_card_2, gp
 
 def write_relations(l_rel, pos, num_id, num_comp, ent_atr, rel_style, line_style, line_type):
-    text_r, rel_num = "", 0
+    text_r, rel_num, rel_pos = "", 0, []
     # Seleccion de estilos
     #rel_style = rnd.choice(gb.OBJ_STYLES)
     #line_style = rnd.choice(gb.LINE_STYLES)
@@ -114,7 +114,8 @@ def write_relations(l_rel, pos, num_id, num_comp, ent_atr, rel_style, line_style
                                 </draw:text-box>
                             </draw:frame>'''
         text_r += rel_s + conn1_s + conn2_s + card1_s + card2_s
-    return text_r
+        rel_pos.append([x_rel, y_rel, w_rel, h_rel])
+    return text_r, rel_pos
 
 def write_ent_atr(ent_atr, pos, obj_style, conn_style, line_type):
     num_id = len(ent_atr)

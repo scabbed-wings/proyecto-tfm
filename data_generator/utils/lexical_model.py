@@ -2,8 +2,8 @@ import pandas as pd
 import random as rnd
 import numpy as np
 from utils.tools import max_len_word 
-DICT_ENTS = pd.read_csv("csv/ent_atr.csv")
-DICT_RELS = pd.read_csv("csv/rel_ent.csv")
+DICT_ENTS = pd.read_csv("data_generator/csv/ent_atr.csv")
+DICT_RELS = pd.read_csv("data_generator/csv/rel_ent.csv")
 
 def findValIndex(val, lista):
     for ind, elem in enumerate(lista):
