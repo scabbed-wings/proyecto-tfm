@@ -1,6 +1,7 @@
 import torch
 from torchvision.ops import box_iou
 import numpy as np
+import matplotlib.pyplot as plt
 
 def get_cuda_device():
     return torch.device('cuda' if torch.cuda.is_available() else "cpu")
@@ -36,6 +37,14 @@ def counter_metrics_per_label(num_classes, num_threhsolds):
     return counter
 
 
+def precision_recall_dict(num_thresholds: int, num_classes: int = 3):
+    # 0: Precision, 1: Recall
+    pr_vector = dict()
+    for i in range(1, num_classes + 1):
+        pr_vector[i] = np.zeros(shape=(num_thresholds, 2))
+    return pr_vector
+
+
 def tp_fp_on_different_thresholds(pred_label, pred_score, num_classes, thresholds):
     tp_fp_vector = counter_metrics_per_label(3, thresholds.shape[0])
     for ind, threshold in enumerate(thresholds):
@@ -46,6 +55,30 @@ def tp_fp_on_different_thresholds(pred_label, pred_score, num_classes, threshold
                 tp_fp_vector[id_class][ind,1] = 1
     return tp_fp_vector
 
+
+def get_precision_recall(thresholds_counter: dict, num_thresholds):
+    precision_recall_vector = precision_recall_dict(num_thresholds=num_thresholds)
+    for key in thresholds_counter.keys():
+        for ind, row in enumerate(thresholds_counter[key]):
+            precision_recall_vector[key][ind, 0] = row[0] / (row[0] + row[1]) if row[0] + row[1] > 0 else 0
+            precision_recall_vector[key][ind, 1] = row[0] / (row[0] + row[2]) if row[0] + row[2] > 0 else 0
+    return precision_recall_vector
+
+
+def create_precision_recall_curve(thresholds, thresholds_counter):
+    styles = ["-b", "-g", "-r"]
+    precision_recall_vector = get_precision_recall(thresholds_counter, thresholds.shape[0])
+    for ind, key in enumerate(precision_recall_vector.keys()):
+        precision = precision_recall_vector[key][:, 0]
+        recall = precision_recall_vector[key][:, 1]
+        plt.plot(precision, recall, styles[ind], label=f"Class {key}")
+    plt.xlabel("Precision")
+    plt.ylabel("Recall")
+    plt.axis((0, 1, 0, 1))
+    plt.title("Precision-Recall Curve")
+    plt.legend(loc=4)
+    plt.show()
+    
 
 def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
     class_thresholds = np.arange(start=0.0, step=0.05, stop=1.05)
@@ -62,7 +95,7 @@ def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
                 #print("Number of box: ", num_row, " IOU with GT BOX: ", index.item())
                 pred_label = predictions["labels"][num_row]
                 pred_score = predictions["scores"][num_row]
-                gt_label = groundtruth["labels"][index.item()]
+                # gt_label = groundtruth["labels"][index.item()]
                 gt_found.append(index.item())
                 pred_tp_fp = tp_fp_on_different_thresholds(pred_label, pred_score, 3, class_thresholds)
                 for key in thresholds_counter.keys():
@@ -77,3 +110,4 @@ def calculate_metrics(predictions, groundtruth, iou_threshold: float=0.5):
     for key in thresholds_counter.keys():
         thresholds_counter[key][:, 2] += fn
     
+    create_precision_recall_curve(class_thresholds, thresholds_counter)
