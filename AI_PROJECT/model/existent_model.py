@@ -27,7 +27,7 @@ def train_model(train_data_loader, valid_data_loader,
     #optimizer = torch.optim.Adam(params, lr=0.001)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
     mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
-    num_epochs = 20
+    num_epochs = 10
 
     loss_hist = Averager()
     itr = 1
@@ -41,6 +41,12 @@ def train_model(train_data_loader, valid_data_loader,
             
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+            for ind, image in enumerate(images):
+                boxes = targets[ind]['boxes'].data.cpu()
+                labels = targets[ind]['labels'].data.cpu()
+                # scores = output[ind]['scores'].data.cpu()
+                new_image = image.data.cpu()
+                visualize_images(new_image, boxes, labels, inference=True)
 
             loss_dict = model(images, targets)   ##Return the loss
             losses = sum(loss for loss in loss_dict.values())
