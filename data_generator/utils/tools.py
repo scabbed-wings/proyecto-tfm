@@ -3,6 +3,8 @@ import numpy as np
 import utils.globals as gb
 import utils.position_rules as pr
 import pandas as pd
+from PIL import Image
+
 
 def size_object(word, obj_type):
     h_obj, w_obj = 0, 0
@@ -16,11 +18,12 @@ def size_object(word, obj_type):
     h_obj = min_h if h_obj < min_h else h_obj
 
     w_obj += add_h
-    
     return h_obj/2, w_obj/2
+
 
 def max_len_word(e):
     return len(max(e.split(" "), key=len))
+
 
 def has_reflx_rel(id_ent, rel):
     for elem in rel:
@@ -29,11 +32,13 @@ def has_reflx_rel(id_ent, rel):
             return h
     return 0
 
+
 def get_pos_ent(id_ent, ent_atr):
     for ind, elem in enumerate(ent_atr):
         if elem[0] == id_ent:
             # print("Id_ent: ", id_ent, " Numero de posicion: ", elem[3], " Numero de indice: ", ind)
             return elem[3], ind
+
 
 def mod_pos_ent_atr(ind, max_mod=2, step=0.2):
     values = np.arange(0, max_mod, step).tolist()
@@ -48,10 +53,10 @@ def mod_pos_ent_atr(ind, max_mod=2, step=0.2):
             horz_mod = -choice(values)
         if getrandbits(1):
             vert_mod = -choice(values) if ind == 3 else choice(values)
-    
+
     # print("Posicion: ", ind, " horz_mod: ", horz_mod, " Vert_mod: ", vert_mod)
-    
     return horz_mod, vert_mod
+
 
 def box_intersection(obj1, obj2):
     l1 = np.array([obj1[0], obj1[1]])
@@ -66,20 +71,25 @@ def box_intersection(obj1, obj2):
         return 0
     return 1
 
+
 def check_intersection_rel(ent_atr, rel_dim):
     for elem in ent_atr:
-        #print("CHECK ELEM: ", elem)
+        # print("CHECK ELEM: ", elem)
         obj_ent = [elem[0], elem[1], elem[3], elem[4]]
-        if box_intersection(rel_dim, obj_ent): return 1
+        if box_intersection(rel_dim, obj_ent):
+            return 1
         if len(elem[2]):
             for elem2 in elem[2]:
-                if box_intersection(rel_dim, elem2): return 1
-        
+                if box_intersection(rel_dim, elem2):
+                    return 1
+
     if len(gb.ADDED_REL):
         for elem in gb.ADDED_REL:
-            if box_intersection(rel_dim, elem): return 1
-    
+            if box_intersection(rel_dim, elem):
+                return 1
+
     return 0
+
 
 def rel_by_pos(ent_atr, rel):
     ind = 0
@@ -92,22 +102,24 @@ def rel_by_pos(ent_atr, rel):
             num_id1 = cop
         if num_id1 != num_id2:
             if num_id1 == 0:
-                if num_id2 in [1,2]:
+                if num_id2 in [1, 2]:
                     ind = 2 if num_id2 == 1 else 0
                 else:
                     ind = 8 if num_id2 == 3 else 4
             elif num_id1 == 1:
                 if num_id2 in [2, 3]:
                     ind = 9 if num_id2 == 2 else 1
-                else: ind = 7
+                else:
+                    ind = 7
             elif num_id1 == 2:
                 ind = 3 if num_id2 == 3 else 5
             elif num_id1 == 3:
                 ind = 6
 
             gb.CONTR_FLAG[ind] = 1
-        
-def mod_pos_rel(id_pos1, id_pos2): # Modify position by intersection
+
+
+def mod_pos_rel(id_pos1, id_pos2):  # Modify position by intersection
     mod_x, mod_y = 0, 0
     if id_pos1 == 0:
         mod_x, mod_y = pr.mod_rules_ent0(id_pos2)
@@ -115,9 +127,10 @@ def mod_pos_rel(id_pos1, id_pos2): # Modify position by intersection
         mod_x, mod_y = pr.mod_rules_ent1(id_pos2)
     elif id_pos1 == 2:
         mod_x, mod_y = pr.mod_rules_ent2(id_pos2)
-    elif id_pos1 == 3: # ID pos 4
-        mod_x, mod_y  = pr.mod_rules_ent3()
+    elif id_pos1 == 3:  # ID pos 4
+        mod_x, mod_y = pr.mod_rules_ent3()
     return mod_x, mod_y
+
 
 def control_pos(id_pos1, id_pos2, x, y, w, h):
     if (id_pos1 == 0 and id_pos2 == 2) or (id_pos1 == 1 and id_pos2 == 3):
@@ -130,14 +143,15 @@ def control_pos(id_pos1, id_pos2, x, y, w, h):
             y = y if y > 0 else gb.OBJ_SPACE
         else:
             y = y if y + (2 * h) + gb.OBJ_SPACE < gb.HEIGHT else gb.HEIGHT - (gb.OBJ_SPACE + 2 * h)
-    
     return x, y
+
 
 def init_control_flags():
     gb.CONTR_FLAG = [0] * 11
 
+
 def set_styles():
-    #line_type = "" if getrandbits(1) else f'''draw:type="line"'''
+    # line_type = "" if getrandbits(1) else f'''draw:type="line"'''
     line_type_rel = choice(gb.REL_LINE_STYLES)
     line_type_attr = choice(gb.REL_LINE_STYLES)
     # Set de lineas finas
@@ -147,42 +161,49 @@ def set_styles():
     else:
         obj_style = "gr5"
         conn_style = "gr15"
-    
     return line_type_rel, line_type_attr, obj_style, conn_style
+
 
 def px_pos(cm_pos):
     x_px = int((cm_pos[0] / gb.WIDTH) * gb.IM_WIDTH)
     y_px = int((cm_pos[1] / gb.HEIGHT) * gb.IM_HEIGHT)
-    w_px = int(((cm_pos[2] / gb.WIDTH)  * gb.IM_WIDTH) * 2)   
+    w_px = int(((cm_pos[2] / gb.WIDTH) * gb.IM_WIDTH) * 2)
     h_px = int(((cm_pos[3] / gb.HEIGHT) * gb.IM_HEIGHT) * 2)
 
     return [x_px, y_px, x_px + w_px, y_px + h_px]
+
 
 def px_pos_fractional(cm_pos):
     aux = px_pos(cm_pos)
 
     return [aux[0]/gb.IM_WIDTH, aux[1]/gb.IM_HEIGHT, aux[2]/gb.IM_WIDTH, aux[3]/gb.IM_HEIGHT]
 
+
 def create_labels(ent_atr, rel, name_file):
-    labels = [] # Formato: x, y, w, h, clase
+    labels = []  # Formato: x, y, w, h, clase
     cols = ['x_min', 'y_min', 'x_max', 'y_max', 'class']
     for elem in ent_atr:
         ent = px_pos([elem[0], elem[1], elem[3], elem[4]])
-        #ent = px_pos_fractional([elem[0], elem[1], elem[3], elem[4]])
+        # ent = px_pos_fractional([elem[0], elem[1], elem[3], elem[4]])
         ent.append(0)
         labels.append(ent)
         if len(elem[2]) > 0:
             for elem2 in elem[2]:
                 atr = px_pos([elem2[0], elem2[1], elem2[2], elem2[3]])
-                #atr = px_pos_fractional([elem2[0], elem2[1], elem2[2], elem2[3]])
+                # atr = px_pos_fractional([elem2[0], elem2[1], elem2[2], elem2[3]])
                 atr.append(1)
                 labels.append(atr)
-    
     for elem in rel:
         rel = px_pos([elem[0], elem[1], elem[2], elem[3]])
-        #rel = px_pos_fractional([elem[0], elem[1], elem[2], elem[3]])
+        # rel = px_pos_fractional([elem[0], elem[1], elem[2], elem[3]])
         rel.append(2)
         labels.append(rel)
 
     df = pd.DataFrame(labels, columns=cols)
     df.to_csv(name_file, sep=";")
+
+
+def resize_processed_image(image_name):
+    image = Image.open(image_name)
+    image_resized = image.resize((gb.IM_WIDTH, gb.IM_HEIGHT))
+    image_resized.save(image_name)

@@ -3,12 +3,13 @@ from torchvision.ops import box_iou
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def get_cuda_device():
-    return torch.device('cuda' if torch.cuda.is_available() else "cpu")
-    #return torch.device("cpu")
+    # return torch.device('cuda' if torch.cuda.is_available() else "cpu")
+    return torch.device("cpu")
 
 
-class Averager:      ##Return the average loss 
+class Averager:      # Return the average loss
     def __init__(self):
         self.current_total = 0.0
         self.iterations = 0.0
@@ -50,9 +51,9 @@ def tp_fp_on_different_thresholds(pred_label, pred_score, num_classes, threshold
     for ind, threshold in enumerate(thresholds):
         for id_class in range(1, num_classes + 1):
             if pred_score > threshold and pred_label == id_class:
-                tp_fp_vector[id_class][ind,0] = 1
+                tp_fp_vector[id_class][ind, 0] = 1
             else:
-                tp_fp_vector[id_class][ind,1] = 1
+                tp_fp_vector[id_class][ind, 1] = 1
     return tp_fp_vector
 
 
@@ -78,21 +79,21 @@ def create_precision_recall_curve(thresholds, thresholds_counter):
     plt.title("Precision-Recall Curve")
     plt.legend(loc=4)
     plt.show()
-    
 
-def calculate_metrics(predictions, groundtruth, class_thresholds, iou_threshold: float=0.5):
-    
+
+def calculate_metrics(predictions, groundtruth, class_thresholds, iou_threshold: float = 0.5):
+
     thresholds_counter = counter_metrics_per_label(3, class_thresholds.shape[0])
     iou_matrix = box_iou(predictions["boxes"], groundtruth["boxes"])
     gt_found = []
     for num_row, row in enumerate(iou_matrix):
         greater_iou = row >= iou_threshold
-        indexes= greater_iou.nonzero()
+        indexes = greater_iou.nonzero()
         if indexes.nelement() > 0:
             if indexes.nelement() > 1:
                 print("MOre indexes found")
             for index in indexes:
-                #print("Number of box: ", num_row, " IOU with GT BOX: ", index.item())
+                # print("Number of box: ", num_row, " IOU with GT BOX: ", index.item())
                 pred_label = predictions["labels"][num_row]
                 pred_score = predictions["scores"][num_row]
                 # gt_label = groundtruth["labels"][index.item()]
@@ -102,12 +103,12 @@ def calculate_metrics(predictions, groundtruth, class_thresholds, iou_threshold:
                     thresholds_counter[key] += pred_tp_fp[key]
         else:
             for key in thresholds_counter.keys():
-                    thresholds_counter[key][:, 1] += 1
+                thresholds_counter[key][:, 1] += 1
 
     gt_found = set(gt_found)
     fn_diff = len(groundtruth["boxes"]) - len(gt_found)
     fn = fn_diff if fn_diff >= 0 else 0
     for key in thresholds_counter.keys():
         thresholds_counter[key][:, 2] += fn
-    
+
     return thresholds_counter
