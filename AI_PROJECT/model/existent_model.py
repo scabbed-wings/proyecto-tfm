@@ -3,7 +3,7 @@ import torch.utils
 import torch.utils.data
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from model.utils import get_cuda_device, Averager, calculate_metrics, create_precision_recall_curve
+from model.utils import get_cuda_device, Averager, calculate_metrics, create_precision_recall_curve, nms_filter_boxes
 from dataset.dataset import visualize_images
 from dataset.utils.transformations import collate_function
 from torchmetrics.detection import MeanAveragePrecision
@@ -27,7 +27,7 @@ def train_model(train_data_loader, valid_data_loader,
     optimizer = torch.optim.Adam(params, lr=0.001)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
     mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
-    num_epochs = 20
+    num_epochs = 40
 
     loss_hist = Averager()
     itr = 1
@@ -74,7 +74,7 @@ def train_model(train_data_loader, valid_data_loader,
             # update the learning rate
             if lr_scheduler is not None:
                 lr_scheduler.step()
-            if (epoch + 1) % 10 == 0:
+            if (epoch + 1) % 5 == 0:
                 checkpoint(model, save_checkpoint, epoch=epoch+1)
 
             print(f"Epoch #{epoch} loss: {loss_hist.value}")
@@ -91,9 +91,10 @@ def inference_test(weights_file, model, test_dataloader):
         for ind, image in enumerate(images):
             boxes = output[ind]['boxes'].data.cpu()
             labels = output[ind]['labels'].data.cpu()
-            # scores = output[ind]['scores'].data.cpu()
+            scores = output[ind]['scores'].data.cpu()
+            filtered_boxes, filtered_labels = nms_filter_boxes(boxes, scores, labels, 0.5)
             new_image = image.data.cpu()
-            visualize_images(new_image, boxes, labels, inference=True)
+            visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)
 
 
 def model_test_metrics(weights_file, model, test_dataloader):

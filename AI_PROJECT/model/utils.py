@@ -1,5 +1,5 @@
 import torch
-from torchvision.ops import box_iou
+from torchvision.ops import box_iou, nms
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -112,3 +112,10 @@ def calculate_metrics(predictions, groundtruth, class_thresholds, iou_threshold:
         thresholds_counter[key][:, 2] += fn
 
     return thresholds_counter
+
+
+def nms_filter_boxes(result_boxes, result_scores, result_labels, iou_threshold):
+    nms_ids = nms(result_boxes, result_scores, iou_threshold)
+    filtered_boxes = result_boxes.index_select(0, nms_ids)
+    filtered_labels = result_labels.index_select(0, nms_ids)
+    return filtered_boxes, filtered_labels
