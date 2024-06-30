@@ -1,5 +1,6 @@
 import torch
 from torchvision.ops import box_iou, nms
+import torchvision.transforms as TT
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
@@ -90,3 +91,11 @@ def create_PRC(y_true, y_scores, num_classes):
     plt.title('Precision-Recall Curve for Each Class')
     plt.legend(loc=4)
     plt.show()
+
+
+def test_transform(dims):
+    return TT.Compose([
+        TT.Grayscale(),
+        TT.Resize(dims),
+        TT.ToTensor(),
+    ])

@@ -5,8 +5,9 @@ from dataset.dataset import visualize_images
 from dataset.utils.transformations import collate_function
 from torchmetrics.detection import MeanAveragePrecision
 import os
+from PIL import Image
 from model.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
-                         nms_filter_boxes, evaluate_predictions)
+                         nms_filter_boxes, evaluate_predictions, test_transform)
 
 
 def checkpoint(model, filedir, epoch):
@@ -81,16 +82,17 @@ def inference_test(weights_file, model, test_dataloader):
     device = get_cuda_device()
     model.to(device)
     model.eval()
-    for images, _ in test_dataloader:
-        images = list(image.to(device) for image in images)
-        output = model(images)
-        for ind, image in enumerate(images):
-            boxes = output[ind]['boxes'].data.cpu()
-            labels = output[ind]['labels'].data.cpu()
-            scores = output[ind]['scores'].data.cpu()
-            filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
-            new_image = image.data.cpu()
-            visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)
+    with torch.no_grad:
+        for images, _ in test_dataloader:
+            images = list(image.to(device) for image in images)
+            output = model(images)
+            for ind, image in enumerate(images):
+                boxes = output[ind]['boxes'].data.cpu()
+                labels = output[ind]['labels'].data.cpu()
+                scores = output[ind]['scores'].data.cpu()
+                filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
+                new_image = image.data.cpu()
+                visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)
 
 
 def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou_threshold=0.15):
@@ -98,7 +100,6 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
     device = get_cuda_device()
     model.to(device)
     model.eval()
-    device = get_cuda_device()
     y_true = {i: [] for i in range(1, num_classes+1)}
     y_scores = {i: [] for i in range(1, num_classes+1)}
 
@@ -122,3 +123,27 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
                     y_scores[class_id].extend(pred_scores[pred_labels == class_id])
 
     return y_true, y_scores
+
+
+def unitary_inference(model, weights_file, image_path, dims=(320, 320)):
+    print("Loading model")
+    model.load_state_dict(torch.load(weights_file))
+    device = get_cuda_device()
+    transform = test_transform(dims)
+    print("Processing image")
+    image = Image.open(image_path)
+    processed_image = transform(image)
+    processed_image = processed_image.unsqueeze(0)
+    model.to(device)
+    model.eval()
+    with torch.no_grad():
+        processed_image.to(device)
+        print("Inference on image")
+        output = model(processed_image)[0]
+        boxes = output['boxes'].data.cpu()
+        labels = output['labels'].data.cpu()
+        scores = output['scores'].data.cpu()
+        filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
+        new_image = processed_image.data.cpu()
+        new_image = new_image.squeeze(0)
+        visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)

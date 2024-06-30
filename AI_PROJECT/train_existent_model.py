@@ -9,4 +9,3 @@ if __name__ == "__main__":
                                                                                   dims=(320, 320))
     
     train_model(train_data_loader, valid_data_loader, model)
-    # inference_test("AI_PROJECT\output\model_20.pth", model, test_data_loader)
