@@ -63,7 +63,7 @@ def train_model(train_data_loader, valid_data_loader,
                 valid_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in valid_targets]
                 output = model(images)
                 output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
-                filtered_output = nms_on_output_dictionary(output)
+                filtered_output = nms_on_output_dictionary(output, iou_threshold=0.15)
                 mAP.update(preds=filtered_output, target=valid_targets)
                 metrics = mAP.compute()
                 print(metrics)

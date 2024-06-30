@@ -5,7 +5,21 @@ import os
 import utils.lexical_model as LM
 from pathlib import Path
 from utils.tools import rel_by_pos, init_control_flags, set_styles, create_labels, resize_processed_image
+import shutil
+from glob import glob
+from random import sample
 
+
+def separate_test_train(images_list, destination_folder, proportion_value=0.1):
+    value_prop = int(len(images_list) * proportion_value)
+    random_choices = sample(images_list, value_prop)
+    for path in random_choices:
+        image_path = Path(path)
+        csv_path = Path(f'''{image_path.parent}\\{image_path.stem}.csv''')
+        shutil.move(image_path, destination_folder)
+        shutil.move(csv_path, destination_folder)
+
+    
 
 def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     init_control_flags()  # Init control flags to avoid redundancies
@@ -48,10 +62,13 @@ if __name__ == "__main__":
     f.close()
     path_folder_files = f'''data_generator/fodg'''
     path_folder_img = f'''data_generator/img_fractional'''
+    dataset_output = f'''data_generator/test'''
     if not os.path.isdir(path_folder_files):
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
+    if not os.path.isdir(dataset_output):
+        os.mkdir(dataset_output)
     set_img = 100  # Numero de imágenes por cada grupo de entidades
     num_img = 0
     for i in range(2, 6):
@@ -59,3 +76,5 @@ if __name__ == "__main__":
             num_img += 1
             print(f"-------- CREANDO IMAGEN NUMERO {num_img} ----------------")
             create_imgs(contents, i, num_img, path_folder_files, path_folder_img)
+    images_list = glob(path_folder_img + "/*.png")
+    separate_test_train(images_list, dataset_output)
