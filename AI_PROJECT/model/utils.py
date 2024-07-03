@@ -79,7 +79,7 @@ def evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scor
 
 
 def create_PRC(y_true, y_scores, num_classes):
-    styles = ["-b", "-g", "-r"]
+    styles = ["-r", "-g", "-b"]
     class_name = ["Entity", "Attribute", "Relation"]
     for class_id in range(1, num_classes+1):
         precision, recall, thresholds = precision_recall_curve(y_true[class_id], y_scores[class_id])

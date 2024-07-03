@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from dataset.utils.custom_dataset import BoundingBoxDataset
 from dataset.utils.transformations import get_transforms, get_mean_std
 from torch.utils.data import DataLoader
+import matplotlib.pyplot as plt
 
 OG_WIDTH, OG_HEIGHT = 1181, 1545
 
@@ -42,15 +43,13 @@ def visualize_images(image, bboxes, labels, inference: bool = False):
     bboxes = bboxes.numpy()
     labels =labels.numpy()
     for i in range(bboxes.shape[0]):
-            
             new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
             #print(new_bboxes)
             color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
             cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
                           (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
-    cv2.imshow("TORCH IMAGE", array)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    plt.imshow(array)
+    plt.show()
 
 def process_data_box_unit(dataset_folder: str, 
                  new_width: int = 640, new_height: int = 640):

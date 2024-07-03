@@ -9,6 +9,6 @@ if __name__ == "__main__":
                                                                                   dims=(320, 320))
     model = model_defintion()
     weights_path = "AI_PROJECT\output\model_25.pth"
-    inference_test(weights_path, model, test_data_loader)
+    # inference_test(weights_path, model, test_data_loader)
     y_true, y_scores = get_inference_and_metrics(weights_path, model, test_data_loader, 3, iou_threshold=0.5)
     create_PRC(y_true, y_scores, 3)

@@ -5,7 +5,6 @@ from dataset.dataset import visualize_images
 from dataset.utils.transformations import collate_function
 from torchmetrics.detection import MeanAveragePrecision
 import os
-from PIL import Image
 from model.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
                          nms_filter_boxes, evaluate_predictions, test_transform)
 
@@ -125,13 +124,12 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
     return y_true, y_scores
 
 
-def unitary_inference(model, weights_file, image_path, dims=(320, 320)):
+def unitary_inference(model, weights_file, image, dims=(320, 320)):
     print("Loading model")
     model.load_state_dict(torch.load(weights_file))
     device = get_cuda_device()
     transform = test_transform(dims)
     print("Processing image")
-    image = Image.open(image_path)
     processed_image = transform(image)
     processed_image = processed_image.unsqueeze(0)
     model.to(device)
@@ -146,4 +144,4 @@ def unitary_inference(model, weights_file, image_path, dims=(320, 320)):
         filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
         new_image = processed_image.data.cpu()
         new_image = new_image.squeeze(0)
-        visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)
+        return filtered_boxes, filtered_labels
