@@ -15,3 +15,5 @@
 /AI_PROJECT/dataset/__pycache__
 /AI_PROJECT/dataset/utils/transform/__pycache__
 /AI_PROJECT/relator/__pycache__
+/pred_boxes.pkl
+/pred_labels.pkl
