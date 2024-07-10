@@ -81,7 +81,7 @@ def inference_test(weights_file, model, test_dataloader):
     device = get_cuda_device()
     model.to(device)
     model.eval()
-    with torch.no_grad:
+    with torch.no_grad():
         for images, _ in test_dataloader:
             images = list(image.to(device) for image in images)
             output = model(images)

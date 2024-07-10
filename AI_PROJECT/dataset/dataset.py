@@ -36,7 +36,7 @@ def visualize_new_annotations(image_list, bboxes, classes,
         cv2.imshow("Annotations", image)
         cv2.waitKey(0)
 
-def visualize_images(image, bboxes, labels, inference: bool = False):
+def visualize_images(image, bboxes, labels, inference: bool = False, box_index=False):
     array = image.numpy()
     array = np.transpose(array, (1,2,0))
     array = cv2.cvtColor(array, cv2.COLOR_GRAY2RGB)
@@ -44,10 +44,13 @@ def visualize_images(image, bboxes, labels, inference: bool = False):
     labels =labels.numpy()
     for i in range(bboxes.shape[0]):
             new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
-            #print(new_bboxes)
+            # print(new_bboxes)
             color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
             cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
                           (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
+            if box_index:
+                centroid = (int(new_bboxes[0]), int(new_bboxes[1]))
+                cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 1)
     plt.imshow(array)
     plt.show()
 

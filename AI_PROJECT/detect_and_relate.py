@@ -1,6 +1,6 @@
 from model.existent_model import unitary_inference
 from model.model_definition import model_defintion
-from relator.read_bboxes import read_boxes
+from relator.read_bboxes import read_box
 from torch import tensor
 from torchvision.transforms.functional import pil_to_tensor
 from PIL import Image
@@ -19,7 +19,7 @@ def resize_bounding_boxes(bounding_boxes, dims):
 if __name__ == "__main__":
     model = model_defintion()
     weights_path = "AI_PROJECT\output\model_25.pth"
-    test_image = r"data_generator\test\img398.png"
+    test_image = r"data_generator\test\img1.png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model, weights_path, image, dims)
@@ -32,6 +32,6 @@ if __name__ == "__main__":
     with open('pred_labels.pkl', 'wb') as file_labels:
         pickle.dump(pred_labels, file_labels)
 
-    # image_tensor = pil_to_tensor(image)
-    # visualize_images(image_tensor, original_size_pred_boxes, pred_labels, inference=True)
+    image_tensor = pil_to_tensor(image)
+    visualize_images(image_tensor, original_size_pred_boxes, pred_labels, inference=True, box_index=True)
     # read_boxes(image, original_size_pred_boxes)
