@@ -197,7 +197,6 @@ def get_entity_and_relation(relation, labels):
 def create_labels(ent_atr_positions, rel_position, rel_text, name_file):
     labels = []  # Formato: x, y, w, h, clase, id, relaciones
     cols = ['x_min', 'y_min', 'x_max', 'y_max', 'class', 'id', 'related_objects']
-    print("Longitud de entidades y sus atributos: ", len(ent_atr_positions))
     count_atrs = len(ent_atr_positions) + 1
     for index, elem in enumerate(ent_atr_positions):
         ent = px_pos([elem[0], elem[1], elem[3], elem[4]])

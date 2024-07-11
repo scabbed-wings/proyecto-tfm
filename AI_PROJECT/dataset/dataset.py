@@ -36,6 +36,7 @@ def visualize_new_annotations(image_list, bboxes, classes,
         cv2.imshow("Annotations", image)
         cv2.waitKey(0)
 
+
 def visualize_images(image, bboxes, labels, inference: bool = False, box_index=False):
     array = image.numpy()
     array = np.transpose(array, (1,2,0))
@@ -53,6 +54,7 @@ def visualize_images(image, bboxes, labels, inference: bool = False, box_index=F
                 cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 2)
     plt.imshow(array)
     plt.show()
+
 
 def process_data_box_unit(dataset_folder: str, 
                  new_width: int = 640, new_height: int = 640):

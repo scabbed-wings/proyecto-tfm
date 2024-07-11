@@ -61,17 +61,16 @@ if __name__ == "__main__":
     contents = f.read()
     f.close()
     path_folder_files = f'''data_generator/fodg'''
-    # path_folder_img = f'''data_generator/img_fractional'''
-    # dataset_output = f'''data_generator/test'''
-    path_folder_img = f'''data_generator/prueba'''
-    dataset_output = f'''data_generator/test_prueba'''
+    path_folder_img = f'''data_generator/img_fractional'''
+    dataset_output = f'''data_generator/test'''
+
     if not os.path.isdir(path_folder_files):
         os.mkdir(path_folder_files)
     if not os.path.isdir(path_folder_img):
         os.mkdir(path_folder_img)
     if not os.path.isdir(dataset_output):
         os.mkdir(dataset_output)
-    set_img = 2  # Numero de imágenes por cada grupo de entidades
+    set_img = 100  # Numero de imágenes por cada grupo de entidades
     num_img = 0
     for i in range(2, 6):
         for j in range(set_img):
