@@ -1,9 +1,5 @@
-from PIL import Image
-import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-import pickle
-from read_bboxes import read_box
 
 
 def relation_is_valid(label_source, label_target):
@@ -27,13 +23,29 @@ def max_min_coordinates(bbox1, bbox2):
     return xmin, ymin, xmax, ymax
 
 
+def border_boxes_points(bbox_coords):
+    border_points = []
+    # Todos los puntos a lo ancho del rectangulo por arriba y abajo
+    for i in range(bbox_coords[0], bbox_coords[2] + 1):
+        border_points.append((i, bbox_coords[1]))
+        border_points.append((i, bbox_coords[3]))
+    # Todos los puntos a lo alto del rectangulo por izquierda y derecha
+    for j in range(bbox_coords[1], bbox_coords[3] + 1):
+        border_points.append((bbox_coords[0], j))
+        border_points.append((bbox_coords[2], j))
+    return border_points
+
+
 def resize_boxes_2_crop(xmin, ymin, bbox1, bbox2):
     bbox1 = bbox1.int().numpy()
     bbox2 = bbox2.int().numpy()
     # Modificar el tamaño
     bbox1 = [int(bbox1[0] - xmin), int(bbox1[1] - ymin), int(bbox1[2] - xmin), int(bbox1[3] - ymin)]
     bbox2 = [int(bbox2[0] - xmin), int(bbox2[1] - ymin), int(bbox2[2] - xmin), int(bbox2[3] - ymin)]
-    # Proporcionar las 4 esquinas
+    # Proporcionar los puntos de los bordes 
+    # bbox1 = border_boxes_points(bbox1)
+    # bbox2 = border_boxes_points(bbox2)
+    # Proporcionar las esquinas
     bbox1 = [(bbox1[0], bbox1[1]), (bbox1[0], bbox1[3]), (bbox1[2], bbox1[1]), (bbox1[2], bbox1[3])]
     bbox2 = [(bbox2[0], bbox2[1]), (bbox2[0], bbox2[3]), (bbox2[2], bbox2[1]), (bbox2[2], bbox2[3])]
     return bbox1, bbox2
@@ -48,6 +60,9 @@ def check_points_in_contour(contours, bbox1, bbox2):
             p2_in = cv2.pointPolygonTest(contour, combination[1], False)
             if p1_in >= 0 and p2_in >= 0:
                 not_contained = True
+                break
+        if not_contained:
+            break
     return not_contained
 
 
@@ -66,8 +81,8 @@ def crop_outsider_elements(bboxes, binary_image, index_source, index_target):
     bbox_source, bbox_target = resize_boxes_2_crop(xmin, ymin, bboxes[index_source], 
                                                    bboxes[index_target])
     copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
-    plt.imshow(copy_binary_image, 'gray')
-    plt.show()
+    # plt.imshow(copy_binary_image, 'gray')
+    # plt.show()
     return copy_binary_image, bbox_source, bbox_target
 
 
@@ -81,22 +96,7 @@ def follow_lines(original_image, binary_image, bboxes, labels):
                 contours = cv2.findContours(cropped_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                 contours = contours[0] if len(contours) == 2 else contours[1]
                 if check_points_in_contour(contours, bbox_source, bbox_target):
-                    text_source = read_box(original_image, bboxes[ind_source])
-                    text_target = read_box(original_image, bboxes[ind_target])
-                    print("TEXT_SOURCE: ", text_source, " TEXT_TARGET: ", text_target)
-
-if __name__ == "__main__":
-    test_image = r"data_generator\test\img1.png"
-    image = Image.open(test_image)
-    image = image.convert('L')
-    image_array = np.asarray(image)
-    ret, thresholded_image = cv2.threshold(image_array,127,255,cv2.THRESH_BINARY_INV)
-    kernel = np.ones((3,3))
-    dilate_thresholded_image = cv2.dilate(thresholded_image, kernel, iterations=1)
-    bboxes= []
-    labels = []
-    with open('pred_boxes.pkl', 'rb') as file_boxes:
-        bboxes = pickle.load(file_boxes)
-    with open('pred_labels.pkl', 'rb') as file_labels:
-        labels = pickle.load(file_labels)
-    follow_lines(image, dilate_thresholded_image, bboxes, labels)
+                    #text_source = read_box(original_image, bboxes[ind_source])
+                    #text_target = read_box(original_image, bboxes[ind_target])
+                    #print("TEXT_SOURCE: ", text_source, " TEXT_TARGET: ", text_target)
+                    print("ELEMENT SOURCE: ", ind_source, " IS RELATED TO ELEMENT TARGET: ", ind_target)

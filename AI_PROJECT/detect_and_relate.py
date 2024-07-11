@@ -19,7 +19,7 @@ def resize_bounding_boxes(bounding_boxes, dims):
 if __name__ == "__main__":
     model = model_defintion()
     weights_path = "AI_PROJECT\output\model_25.pth"
-    test_image = r"data_generator\test\img1.png"
+    test_image = r"data_generator\test\img362.png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model, weights_path, image, dims)

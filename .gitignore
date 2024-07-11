@@ -2,6 +2,8 @@
 /data_generator/img
 /data_generator/fodg
 /data_generator/img_fractional
+/data_generator/prueba
+/data_generator/test_prueba
 /data_generator/test
 /data_generator/utils/__pycache__
 /ght/utils/detector/__pycache__
@@ -15,5 +17,6 @@
 /AI_PROJECT/dataset/__pycache__
 /AI_PROJECT/dataset/utils/transform/__pycache__
 /AI_PROJECT/relator/__pycache__
+/AI_PROJECT/test_detect_and_relate.py
 /pred_boxes.pkl
 /pred_labels.pkl

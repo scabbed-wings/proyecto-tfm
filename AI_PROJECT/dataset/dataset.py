@@ -50,7 +50,7 @@ def visualize_images(image, bboxes, labels, inference: bool = False, box_index=F
                           (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
             if box_index:
                 centroid = (int(new_bboxes[0]), int(new_bboxes[1]))
-                cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 1)
+                cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 2)
     plt.imshow(array)
     plt.show()
 
