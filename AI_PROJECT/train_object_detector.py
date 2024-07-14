@@ -1,6 +1,6 @@
-from model.model_definition import model_defintion
-from dataset.load_dataset import get_torch_dataloader
-from model.existent_model import train_model, inference_test
+from models.detector_definition import model_defintion
+from datasets.detector_dataset import get_torch_dataloader
+from models.detector_functions import train_model
 
 
 if __name__ == "__main__":

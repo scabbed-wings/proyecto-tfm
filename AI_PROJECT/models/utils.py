@@ -51,8 +51,7 @@ def nms_on_output_dictionary(output, iou_threshold=0.5):
     return filtered_dictionary
 
 
-def evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scores, iou_threshold=0.5):
-    num_classes = len(np.unique(gt_labels))
+def evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, iou_threshold=0.5, num_classes=3):
     tp = {i: 0 for i in range(1, num_classes+1)}
     fp = {i: 0 for i in range(1, num_classes+1)}
     fn = {i: 0 for i in range(1, num_classes+1)}
@@ -75,7 +74,7 @@ def evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, pred_scor
 
         fp[class_id] += len(pred_boxes[pred_mask]) - tp[class_id]
 
-    return tp, fp, fn
+    return tp, fp#, fn
 
 
 def create_PRC(y_true, y_scores, num_classes):

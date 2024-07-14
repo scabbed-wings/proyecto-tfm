@@ -1,7 +1,7 @@
 import torchvision.transforms.functional as FT
 import random
 import torch
-from dataset.utils.transform.utils import find_jaccard_overlap
+from datasets.utils.transform.utils import find_jaccard_overlap
 
 def resize(image, boxes, dims=(300, 300), return_percent_coords=False):
     """

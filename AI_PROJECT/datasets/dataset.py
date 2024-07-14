@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import cv2
 from sklearn.model_selection import train_test_split
-from dataset.utils.custom_dataset import BoundingBoxDataset
-from dataset.utils.transformations import get_transforms, get_mean_std
+from datasets.utils.custom_dataset import BoundingBoxDataset
+from datasets.utils.transformations import get_transforms, get_mean_std
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
@@ -121,6 +121,3 @@ def get_torch_dataloader(batch_size=32, img_width=640, img_height=640,
     test_data_loader = DataLoader(testset, batch_size, shuffle=True, pin_memory=True, num_workers=2)
     
     return train_data_loader, test_data_loader, len(train_set), len(test_set)
-
-if __name__ == "__main__":
-    get_torch_dataloader()

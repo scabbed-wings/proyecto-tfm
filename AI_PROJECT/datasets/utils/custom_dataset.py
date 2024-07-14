@@ -4,8 +4,8 @@ from PIL import Image
 import torch.utils.data
 import torch
 import numpy as np
-from dataset.utils.transform.transform import transform
-from model.utils import get_cuda_device
+from datasets.utils.transform.transform import transform
+from models.utils import get_cuda_device
 
 
 class BoundingBoxDataset(Dataset):

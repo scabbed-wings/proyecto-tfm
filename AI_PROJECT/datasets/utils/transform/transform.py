@@ -1,6 +1,6 @@
 import torchvision.transforms.functional as FT
 import random
-import dataset.utils.transform.transform_operations as TO
+import datasets.utils.transform.transform_operations as TO
 
 
 def transform(images, bboxes, labels, split, dims=(300, 300)):

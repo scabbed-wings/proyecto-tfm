@@ -1,5 +1,4 @@
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.rpn import AnchorGenerator
 from torchvision.models.detection import FasterRCNN_MobileNet_V3_Large_FPN_Weights
 import torchvision
 

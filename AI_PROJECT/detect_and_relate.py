@@ -1,10 +1,10 @@
-from model.existent_model import unitary_inference
-from model.model_definition import model_defintion
+from models.detector_functions import unitary_inference
+from models.detector_definition import model_defintion
 from relator.read_bboxes import read_box
 from torch import tensor
 from torchvision.transforms.functional import pil_to_tensor
 from PIL import Image
-from dataset.dataset import visualize_images
+from datasets.dataset import visualize_images
 import pickle
 
 
