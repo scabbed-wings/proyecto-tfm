@@ -4,8 +4,8 @@ import torch
 import pandas as pd
 import numpy as np
 import cv2
+import os
 from sklearn.model_selection import train_test_split
-from datasets.utils.custom_dataset import BoundingBoxDataset
 from datasets.utils.transformations import get_transforms, get_mean_std
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
@@ -87,37 +87,24 @@ def process_data_bboxes(dataset_folder: str, not_background: bool = True):
     return pd.DataFrame(output_list, columns=["img_path", "bboxes", "labels"])
 
 
-def get_torch_dataloader(batch_size=32, img_width=640, img_height=640,
-                         dataset="data_generator/img"):
-    print("Processing data")
-    df = process_data_box_unit(dataset)
-    print("Splitting data")
-    train_set, test_set = train_test_split(df, test_size=0.1,
-                                           shuffle=True, stratify=df["class"])
-    print("Creating tensors")
-    train_images = train_set["image_path"].values
-    test_images = test_set["image_path"].values
+def process_data_classificator(annotation_data: list, images_folder: str):
+    dataframe_list = []
+    for annotation in annotation_data:
+        image_path = Path(os.path.join(images_folder, annotation['image_name']))
+        abs_path = image_path.resolve()
+        dataframe_list.append([image_path, annotation['label'], annotation['bbox1'], 
+                               annotation['bbox2']])
+    return pd.DataFrame(dataframe_list, columns=['image_path', 'label', 'bbox1', 'bbox2'])
 
-    train_labels = torch.from_numpy(train_set['class'].values)
-    test_labels = torch.from_numpy(test_set['class'].values)
 
-    train_bbox = torch.from_numpy(train_set[['x_min', 'x_max',
-                                             'y_min', 'y_max']].values)
-    test_bbox = torch.from_numpy(test_set[['x_min', 'x_max',
-                                           'y_min', 'y_max']].values)
-    print("Getting normalized vectors")
-    mean, std = get_mean_std(dataset)
-    print(mean, std)
-    train_transform, test_transform = get_transforms(img_height=img_height,
-                                                      img_width=img_width,
-                                                      mean=mean, std=std)
-    print("Creating train and test sets")
-    trainset = BoundingBoxDataset((train_images, train_labels, train_bbox),
-                                  transforms=train_transform)
-    testset = BoundingBoxDataset((test_images, test_labels, test_bbox),
-                                 transforms=test_transform)
-    print("Creating dataloader objects")
-    train_data_loader = DataLoader(trainset, batch_size, shuffle=True, pin_memory=True, num_workers=2)
-    test_data_loader = DataLoader(testset, batch_size, shuffle=True, pin_memory=True, num_workers=2)
-    
-    return train_data_loader, test_data_loader, len(train_set), len(test_set)
+def balance_dataset(df: pd.DataFrame, target_column: str = 'label'):
+    min_class_size = df[target_column].value_counts().min()
+    # Separar las clases mayoritaria y minoritaria
+    df_minority = df[df[target_column] == df[target_column].value_counts().idxmin()]
+    df_majority = df[df[target_column] == df[target_column].value_counts().idxmax()]
+
+    df_majority_downsampled = df_majority.sample(n=min_class_size)
+
+    df_resampled = pd.concat([df_minority, df_majority_downsampled])
+
+    return df_resampled

@@ -24,6 +24,3 @@ def get_torch_dataloader(dims, dataset_path="data_generator/img_fractional",
 
     return train_set_obj, valid_data_loader, test_data_loader
 
-
-if __name__ == "__main__":
-    get_torch_dataloader()
