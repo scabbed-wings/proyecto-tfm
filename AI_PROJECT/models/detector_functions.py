@@ -110,15 +110,17 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
             for i, output in enumerate(outputs):
                 gt_boxes = targets[i]['boxes'].cpu().numpy()
                 gt_labels = targets[i]['labels'].cpu().numpy()
-                pred_boxes = output['boxes'].cpu().numpy()
-                pred_scores = output['scores'].cpu().numpy()
-                pred_labels = output['labels'].cpu().numpy()
-
-                tp, fp = evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, iou_threshold)
-                #tp, fp, fn = evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, iou_threshold)
+                pred_boxes = output['boxes'].data.cpu()
+                pred_scores = output['scores'].data.cpu()
+                pred_labels = output['labels'].data.cpu()
+                filtered_boxes, filtered_labels, filtered_scores = nms_filter_boxes(pred_boxes, pred_scores, pred_labels, 0.15)
+                filtered_boxes = filtered_boxes.numpy()
+                filtered_labels = filtered_labels.numpy()
+                filtered_scores = filtered_scores.numpy()
+                tp, fp, fn = evaluate_predictions(gt_boxes, gt_labels, filtered_boxes, filtered_labels, iou_threshold)
                 for class_id in range(1, num_classes+1):
                     y_true[class_id].extend([1] * tp[class_id] + [0] * fp[class_id])
-                    y_scores[class_id].extend(pred_scores[pred_labels == class_id])
+                    y_scores[class_id].extend(filtered_scores[filtered_labels == class_id])
 
     return y_true, y_scores
 

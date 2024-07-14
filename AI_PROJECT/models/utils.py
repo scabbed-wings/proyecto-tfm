@@ -74,21 +74,24 @@ def evaluate_predictions(gt_boxes, gt_labels, pred_boxes, pred_labels, iou_thres
 
         fp[class_id] += len(pred_boxes[pred_mask]) - tp[class_id]
 
-    return tp, fp#, fn
+    return tp, fp, fn
 
 
 def create_PRC(y_true, y_scores, num_classes):
     styles = ["-r", "-g", "-b"]
     class_name = ["Entity", "Attribute", "Relation"]
+    fig, axis = plt.subplots(num_classes)
+    
     for class_id in range(1, num_classes+1):
         precision, recall, thresholds = precision_recall_curve(y_true[class_id], y_scores[class_id])
         
-        plt.plot(recall, precision, styles[class_id - 1], label=f'Class {class_name[class_id - 1]}')
+        axis[class_id - 1].plot(recall, precision, styles[class_id - 1], label=f'Class {class_name[class_id - 1]}')
+        axis[class_id - 1].set_title(class_name[class_id - 1])
+        axis[class_id - 1].set_xlabel('Recall')
+        axis[class_id - 1].set_ylabel('Precision')
         
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.title('Precision-Recall Curve for Each Class')
-    plt.legend(loc=4)
+    fig.suptitle('Precision-Recall Curve for Each Class')
+    fig.savefig('metrics_model.png')
     plt.show()
 
 
