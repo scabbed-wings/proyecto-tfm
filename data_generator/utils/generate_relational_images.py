@@ -33,6 +33,8 @@ def relation_is_processed(relation: list, processed_relations: list):
 def max_min_coordinates(bbox1, bbox2):
     xmin = min(bbox1[0], bbox2[0])
     ymin = min(bbox1[1], bbox2[1])
+    xmin = 0 if xmin < 0 else xmin
+    ymin = 0 if ymin < 0 else ymin
     xmax = max(bbox1[2], bbox2[2])
     ymax = max(bbox1[3], bbox2[3])
     return xmin, ymin, xmax, ymax
@@ -63,7 +65,6 @@ def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relat
             copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
             crop_label = crop_labels(output_path.name, Path(crop_path), label, bbox_source, bbox_target)
             labels.append(crop_label)
-            cv2.imwrite(str(output_path), image)
             cv2.imwrite(crop_path, copy_binary_image)
     return labels
         

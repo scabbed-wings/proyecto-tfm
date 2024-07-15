@@ -5,6 +5,8 @@
 /data_generator/prueba
 /data_generator/relational_images
 /data_generator/test_prueba
+/data_generator/train_relational_images
+/data_generator/test_relational_images
 /data_generator/test
 /data_generator/utils/__pycache__
 /ght/utils/detector/__pycache__
