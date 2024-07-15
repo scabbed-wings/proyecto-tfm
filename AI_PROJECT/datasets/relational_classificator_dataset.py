@@ -7,16 +7,25 @@ from torchvision import transforms
 import json
 
 
-def create_classificator_dataset(annotation_file: str, images_folder: str, 
+def create_classificator_dataset(train_annotation_file: str, train_images_folder: str,
+                                 test_annotation_file: str, test_images_folder: str, 
                                  validation_proportion: float = 0.1, dims=(320,320)):
-    
-    f = open(annotation_file, 'r')
-    annotation_data = json.load(f)
-    f.close()
-    df = process_data_classificator(annotation_data, images_folder)
-    balanced_df = balance_dataset(df)
-    train_set, valid_set = train_test_split(balanced_df, test_size=validation_proportion,
-                                            stratify=balanced_df['label'])
+    # Load train annotations
+    f_train = open(train_annotation_file, 'r')
+    train_annotation_data = json.load(f_train)
+    f_train.close()
+    # Load test annotations
+    f_test = open(test_annotation_file, 'r')
+    test_annotation_data = json.load(f_test)
+    f_test.close()
+    # Create and balance train and validation dataframe
+    df_train = process_data_classificator(train_annotation_data, train_images_folder)
+    balanced_df_train = balance_dataset(df_train)
+    train_set, valid_set = train_test_split(balanced_df_train, test_size=validation_proportion,
+                                            stratify=balanced_df_train['label'])
+    # Create test dataframe
+    df_test = process_data_classificator(test_annotation_data, test_images_folder)
+    print(len(train_set), len(valid_set), len(df_test))
     transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize(dims),
@@ -24,9 +33,12 @@ def create_classificator_dataset(annotation_file: str, images_folder: str,
     ])
     train_obj = PairedImageDataset(train_set, dims, transform)
     valid_obj = PairedImageDataset(valid_set, dims, transform)
+    test_obj = PairedImageDataset(df_test, dims, transform)
     train_dataloader = DataLoader(train_obj, batch_size=32, shuffle=True, 
                             collate_fn=collate_function_classificator)
     validation_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True, 
                             collate_fn=collate_function_classificator)
+    test_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True,
+                                 collate_fn=collate_function_classificator)
     
-    return train_dataloader, validation_dataloader
+    return train_dataloader, validation_dataloader, test_dataloader
