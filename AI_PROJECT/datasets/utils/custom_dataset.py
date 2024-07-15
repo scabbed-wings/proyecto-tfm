@@ -34,27 +34,24 @@ class CustomBBoxDataset(Dataset):
 
 
 class PairedImageDataset(Dataset):
-    def __init__(self, image_dir1, image_dir2, labels, transform=None):
-        self.image_dir1 = image_dir1
-        self.image_dir2 = image_dir2
-        self.labels = labels
+    def __init__(self, data, size=(300,300), transform=None):
+        self.data = data
         self.transform = transform
-        self.image_names1 = os.listdir(image_dir1)
-        self.image_names2 = os.listdir(image_dir2)
 
     def __len__(self):
-        return len(self.labels)
+        return len(self.data)
 
     def __getitem__(self, idx):
-        img1_path = os.path.join(self.image_dir1, self.image_names1[idx])
-        img2_path = os.path.join(self.image_dir2, self.image_names2[idx])
-        img1 = Image.open(img1_path).convert('RGB')
-        img2 = Image.open(img2_path).convert('RGB')
+        
+        image_source = Image.open(self.data.iloc[idx, 0]).convert('L')
+        image_crop = Image.open(self.data.iloc[idx, 1]).convert('L')
+        label = torch.tensor(self.data.iloc[idx, 2], dtype=torch.int8)
+        bbox1 = torch.IntTensor(self.data.iloc[idx, 3]).to(torch.int64)
+        bbox2 = torch.IntTensor(self.data.iloc[idx, 4]).to(torch.int64)
 
         if self.transform:
-            img1 = self.transform(img1)
-            img2 = self.transform(img2)
+            image = self.transform(image_source)
+            crop = self.transform(image_crop)
 
-        label = self.labels[idx]
 
-        return img1, img2, label
+        return image, crop, label

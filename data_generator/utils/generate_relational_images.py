@@ -3,9 +3,10 @@ import cv2
 from pathlib import Path
 
 
-def crop_labels(crop_name, label, bbox_source, bbox_target):
+def crop_labels(image_name, crop_name, label, bbox_source, bbox_target):
     return {
-        "image_name": str(crop_name.name),
+        "image_source": str(image_name),
+        "image_crop": str(crop_name.name),
         "label": label,
         "bbox1": bbox_source,
         "bbox2": bbox_target
@@ -60,9 +61,9 @@ def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relat
             bbox_source, bbox_target = resize_boxes_2_crop(xmin, ymin, bbox_origin,
                                                         bbox_target)
             copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
-            crop_label = crop_labels(Path(crop_path), label, bbox_source, bbox_target)
+            crop_label = crop_labels(output_path.name, Path(crop_path), label, bbox_source, bbox_target)
             labels.append(crop_label)
-            
+            cv2.imwrite(str(output_path), image)
             cv2.imwrite(crop_path, copy_binary_image)
     return labels
         

@@ -49,15 +49,24 @@ def get_mean_std(dataset_folder):
     return mean, std
 
 
-def collate_function(batch):
+def collate_function_detector(batch):
     imgs = list()
     targets = list()
-    #bboxes = list()
-    #labels = list()
     for element in batch:
         imgs.append(element[0])
         targets.append(element[1])
-        #bboxes.append(element[1])
-        #labels.append(element[2])
     imgs = torch.stack(imgs, dim=0)
-    return imgs, targets #bboxes, labels
+    return imgs, targets
+
+
+def collate_function_classificator(batch):
+    imgs = list()
+    crops = list()
+    targets = list()
+    for element in batch:
+        imgs.append(element[0])
+        crops.append(element[1])
+        targets.append(element[2])
+    imgs = torch.stack(imgs, dim=0)
+    crops = torch.stack(crops, dim=0)
+    return imgs, crops, targets

@@ -90,11 +90,11 @@ def process_data_bboxes(dataset_folder: str, not_background: bool = True):
 def process_data_classificator(annotation_data: list, images_folder: str):
     dataframe_list = []
     for annotation in annotation_data:
-        image_path = Path(os.path.join(images_folder, annotation['image_name']))
-        abs_path = image_path.resolve()
-        dataframe_list.append([image_path, annotation['label'], annotation['bbox1'], 
+        crop_path = Path(os.path.join(images_folder, annotation['image_crop']))
+        image_path = Path(os.path.join(images_folder, annotation['image_source']))
+        dataframe_list.append([image_path, crop_path, annotation['label'], annotation['bbox1'], 
                                annotation['bbox2']])
-    return pd.DataFrame(dataframe_list, columns=['image_path', 'label', 'bbox1', 'bbox2'])
+    return pd.DataFrame(dataframe_list, columns=['image_source', 'image_crop', 'label', 'bbox1', 'bbox2'])
 
 
 def balance_dataset(df: pd.DataFrame, target_column: str = 'label'):
