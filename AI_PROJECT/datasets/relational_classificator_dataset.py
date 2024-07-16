@@ -19,13 +19,16 @@ def create_classificator_dataset(train_annotation_file: str, train_images_folder
     test_annotation_data = json.load(f_test)
     f_test.close()
     # Create and balance train and validation dataframe
+    print("PROCESSING TRAIN DATA")
     df_train = process_data_classificator(train_annotation_data, train_images_folder)
+    print("BALANCING TRAIN AND VALIDATION DATA")
     balanced_df_train = balance_dataset(df_train)
     train_set, valid_set = train_test_split(balanced_df_train, test_size=validation_proportion,
                                             stratify=balanced_df_train['label'])
     # Create test dataframe
+    print("PROCESSING TEST DATA")
     df_test = process_data_classificator(test_annotation_data, test_images_folder)
-    print(len(train_set), len(valid_set), len(df_test))
+    
     transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize(dims),
@@ -34,11 +37,12 @@ def create_classificator_dataset(train_annotation_file: str, train_images_folder
     train_obj = PairedImageDataset(train_set, dims, transform)
     valid_obj = PairedImageDataset(valid_set, dims, transform)
     test_obj = PairedImageDataset(df_test, dims, transform)
+    print("CREATING DATALOADERS")
     train_dataloader = DataLoader(train_obj, batch_size=32, shuffle=True, 
                             collate_fn=collate_function_classificator)
     validation_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True, 
                             collate_fn=collate_function_classificator)
-    test_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True,
+    test_dataloader = DataLoader(test_obj, batch_size=32, shuffle=True,
                                  collate_fn=collate_function_classificator)
     
     return train_dataloader, validation_dataloader, test_dataloader

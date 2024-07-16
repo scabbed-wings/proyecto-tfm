@@ -69,4 +69,5 @@ def collate_function_classificator(batch):
         targets.append(element[2])
     imgs = torch.stack(imgs, dim=0)
     crops = torch.stack(crops, dim=0)
+    targets = torch.tensor(targets, dtype=torch.float32)
     return imgs, crops, targets

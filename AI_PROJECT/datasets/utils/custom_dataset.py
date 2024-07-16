@@ -45,7 +45,7 @@ class PairedImageDataset(Dataset):
         
         image_source = Image.open(self.data.iloc[idx, 0]).convert('L')
         image_crop = Image.open(self.data.iloc[idx, 1]).convert('L')
-        label = torch.tensor(self.data.iloc[idx, 2], dtype=torch.int8)
+        label = torch.tensor(self.data.iloc[idx, 2], dtype=torch.float32)
         bbox1 = torch.IntTensor(self.data.iloc[idx, 3]).to(torch.int64)
         bbox2 = torch.IntTensor(self.data.iloc[idx, 4]).to(torch.int64)
 
