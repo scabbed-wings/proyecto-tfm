@@ -38,7 +38,7 @@ def create_classificator_dataset(train_annotation_file: str, train_images_folder
     valid_obj = PairedImageDataset(valid_set, dims, transform)
     test_obj = PairedImageDataset(df_test, dims, transform)
     print("CREATING DATALOADERS")
-    train_dataloader = DataLoader(train_obj, batch_size=32, shuffle=True, 
+    train_dataloader = DataLoader(train_obj, batch_size=128, shuffle=True, 
                             collate_fn=collate_function_classificator)
     validation_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True, 
                             collate_fn=collate_function_classificator)

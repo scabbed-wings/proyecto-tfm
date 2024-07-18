@@ -2,7 +2,7 @@ import torch
 import torch.utils
 import torch.utils.data
 from datasets.dataset import visualize_images
-from datasets.utils.transformations import collate_function
+from datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
 import os
 from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
@@ -32,7 +32,7 @@ def train_model(train_data_loader, valid_data_loader,
 
     for epoch in range(num_epochs):
         loss_hist.reset()
-        train_dataloader = torch.utils.data.DataLoader(train_data_loader, 128, collate_fn=collate_function,
+        train_dataloader = torch.utils.data.DataLoader(train_data_loader, 128, collate_fn=collate_function_detector,
                                                        pin_memory=True, num_workers=4)
         model.train()
         for images, targets in train_dataloader:
