@@ -2,6 +2,7 @@ import torch
 from torchmetrics.classification import BinaryAccuracy, BinaryPrecision, BinaryRecall, BinaryROC
 import matplotlib.pyplot as plt
 import os
+from datasets.relational_classificator_dataset import transform_image_test
 
 
 def checkpoint(model, filedir, epoch, best):
@@ -36,9 +37,9 @@ def evaluate_epoch(model, validation_dataloader, device, roc_curve:bool = False,
     acc = accuracy.compute()
     prec = precision.compute()
     rec = recall.compute()
-    print()
     if roc_curve:
         fig_, ax_ = broc.plot(score=True)
+        print(broc.compute())
         plt.show()
 
     return acc, prec, rec
@@ -55,8 +56,8 @@ def train_model(train_data_loader, valid_data_loader,
     # optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.01)
     optimizer = torch.optim.Adam(params, lr=0.0001)
     loss_function = torch.nn.BCEWithLogitsLoss()
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
-    num_epochs = 30
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
+    num_epochs = 50
     best_accuracy = 0
 
 
@@ -73,6 +74,8 @@ def train_model(train_data_loader, valid_data_loader,
             optimizer.step()
             running_loss += loss.item()
         val_acc, val_prec, val_rec = evaluate_epoch(model, valid_data_loader, device)
+        if lr_scheduler is not None:
+            lr_scheduler.step(loss)
         print(f'Epoch {epoch+1}, Loss: {running_loss/len(train_data_loader)}')
         print(f'Validation: Accuracy {val_acc}, Precision {val_prec}, Recall {val_rec}')
        
@@ -90,3 +93,22 @@ def test_model_metrics(weights_file, model, test_dataloader):
     test_accuracy, test_precision, test_recall =  evaluate_epoch(model, test_dataloader, 
                                                                  device, roc_curve=True)
     print(f'Validation: Accuracy {test_accuracy}, Precision {test_precision}, Recall {test_recall}')
+
+
+def unitary_inference_classificator(model, image_source, image_crop, dims=(320,320)):
+    model.eval()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
+    transform = transform_image_test(dims)
+    # Preparing image source tensor
+    image_source_tensor = transform(image_source)
+    image_source_tensor = image_source_tensor.unsqueeze(0)
+    image_source_tensor = image_source_tensor.to(device)
+    # Preparing image crop tensor
+    image_crop_tensor = transform(image_crop)
+    image_crop_tensor = image_crop_tensor.unsqueeze(0)
+    image_crop_tensor = image_crop_tensor.to(device)
+    
+    output = model(image_source_tensor, image_crop_tensor)
+    predictions = torch.sigmoid(output)
+    return predictions

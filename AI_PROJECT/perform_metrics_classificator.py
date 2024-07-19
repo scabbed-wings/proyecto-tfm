@@ -13,5 +13,5 @@ if __name__ == "__main__":
                                                                                             train_images_folder,
                                                                                             test_annotation_file, 
                                                                                             test_images_folder)
-    weights = r"AI_PROJECT\output\classification_output\model_17.pth"
+    weights = r"AI_PROJECT\output\classification_output\best_model_13.pth"
     test_model_metrics(weights, model, test_dataloader)
