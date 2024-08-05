@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from pathlib import Path
+from utils.balanced_counter import Balanced_Counter
 
 
 def crop_labels(image_name, crop_name, label, bbox_source, bbox_target):
@@ -63,12 +64,45 @@ def get_equal_number_of_relation_types(labels_df):
     return min(len(atributes_df), num_entity_relation)
 
 
-def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relations, output_path):
+def type_of_relation(source_class_id, target_class_id):
+    relation_list = [source_class_id, target_class_id]
+    atribute_relation = [0, 1]
+    atribute_relation_relation = [1, 2]
+    entity_relation_relation = [0, 2]
+    reversed_relation = relation_list.copy()
+    reversed_relation.reverse()
+    if (relation_list == atribute_relation or reversed_relation == atribute_relation) or \
+       (relation_list == atribute_relation_relation or reversed_relation == atribute_relation_relation):
+        return 0
+    elif relation_list == entity_relation_relation or reversed_relation == entity_relation_relation:
+        return 1
+
+
+def addition_check_on_type_relation(relation_type: int, balanced_counter: Balanced_Counter):
+    if relation_type == 0 and balanced_counter.count_atribute_is_finished():
+        return True
+    elif relation_type == 1 and balanced_counter.count_entity_relation_is_finished():
+        return True
+    return False
+
+
+def addition_on_type_relation(relation_type: int, balanced_counter: Balanced_Counter):
+    if relation_type == 0:
+        balanced_counter.add_count_atribute()
+    elif relation_type == 1:
+        balanced_counter.add_count_entity_relation()
+
+
+def crop_relations(image, bbox_origin, valid_objects, origin_id, class_id_source, processed_relations,
+                   output_path, balanced_counter: Balanced_Counter):
     labels = []
     for index in range(len(valid_objects)):
         row = valid_objects.iloc[index]
         relation = [row['id'], origin_id]
-        if not relation_is_processed(relation, processed_relations):
+        relation_type = type_of_relation(class_id_source, row['class'])
+
+        if not relation_is_processed(relation, processed_relations) and \
+           not addition_check_on_type_relation(relation_type, balanced_counter):
             processed_relations.append(relation)
             crop_path = f"{output_path.parent}/{output_path.stem}_{len(processed_relations)}.png"
             bbox_target = process_bounding_box(row['x_min'], row['y_min'], row['x_max'], row['y_max'])
@@ -81,19 +115,29 @@ def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relat
             copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
             crop_label = crop_labels(output_path.name, Path(crop_path), label, bbox_source, bbox_target)
             labels.append(crop_label)
-            # cv2.imwrite(crop_path, copy_binary_image)
+            cv2.imwrite(crop_path, copy_binary_image)
+            if balanced_counter.count_or_not() and label == 1:
+                addition_on_type_relation(relation_type, balanced_counter)
+        if balanced_counter.is_finished():
+            break
+
     return labels
 
 
 def crop_relational_image(image, output_path, labels_df, balance_relations: bool):
     processed_relations = []
     processed_labels = []
-    equal_count = get_equal_number_of_relation_types(labels_df) if balance_relations else None
+    number_of_relations = get_equal_number_of_relation_types(labels_df) if balance_relations else None
+    count_balancer = Balanced_Counter(number_of_relations)
+
     for index in range(len(labels_df)):
         row = labels_df.iloc[index]
         bbox_source = process_bounding_box(row['x_min'], row['y_min'], row['x_max'], row['y_max'])
         valid_objects = labels_df.loc[labels_df['class'] != row['class']]
-        crop_labels = crop_relations(image, bbox_source, valid_objects, row['id'],
-                                     processed_relations, output_path)
+        crop_labels = crop_relations(image, bbox_source, valid_objects, row['id'], row['class'],
+                                     processed_relations, output_path, count_balancer)
         processed_labels += crop_labels
+        if balance_relations and count_balancer.is_finished():
+            count_balancer.print_counter()
+            break
     return processed_labels
