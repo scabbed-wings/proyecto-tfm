@@ -12,6 +12,7 @@ def crop_labels(image_name, crop_name, label, bbox_source, bbox_target):
         "bbox2": bbox_target
     }
 
+
 def process_related_objects(related_objects_string: str):
     new_list = related_objects_string.strip('][').split(',')
     return [int(x) for x in new_list]
@@ -47,6 +48,21 @@ def resize_boxes_2_crop(xmin, ymin, bbox1, bbox2):
     return bbox1, bbox2
 
 
+def count_entity_relation_relations(df):
+    count = 0
+    for index in range(len(df)):
+        related_objects = process_related_objects(df.iloc[index]['related_objects'])
+        count += len(related_objects)
+    return count
+
+
+def get_equal_number_of_relation_types(labels_df):
+    atributes_df = labels_df[labels_df['class'] == 1]
+    relations_df = labels_df[labels_df['class'] == 2]
+    num_entity_relation = count_entity_relation_relations(relations_df)
+    return min(len(atributes_df), num_entity_relation)
+
+
 def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relations, output_path):
     labels = []
     for index in range(len(valid_objects)):
@@ -61,17 +77,18 @@ def crop_relations(image, bbox_origin, valid_objects, origin_id, processed_relat
             copy_binary_image = image.copy()
             xmin, ymin, xmax, ymax = max_min_coordinates(bbox_origin, bbox_target)
             bbox_source, bbox_target = resize_boxes_2_crop(xmin, ymin, bbox_origin,
-                                                        bbox_target)
+                                                           bbox_target)
             copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
             crop_label = crop_labels(output_path.name, Path(crop_path), label, bbox_source, bbox_target)
             labels.append(crop_label)
-            cv2.imwrite(crop_path, copy_binary_image)
+            # cv2.imwrite(crop_path, copy_binary_image)
     return labels
-        
 
-def crop_relational_image(image, output_path, labels_df):
+
+def crop_relational_image(image, output_path, labels_df, balance_relations: bool):
     processed_relations = []
     processed_labels = []
+    equal_count = get_equal_number_of_relation_types(labels_df) if balance_relations else None
     for index in range(len(labels_df)):
         row = labels_df.iloc[index]
         bbox_source = process_bounding_box(row['x_min'], row['y_min'], row['x_max'], row['y_max'])
@@ -80,4 +97,3 @@ def crop_relational_image(image, output_path, labels_df):
                                      processed_relations, output_path)
         processed_labels += crop_labels
     return processed_labels
-        

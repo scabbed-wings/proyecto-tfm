@@ -50,7 +50,7 @@ def create_classificator_dataset(train_annotation_file: str, train_images_folder
     df_test = process_data_classificator(test_annotation_data, test_images_folder)
     train_transform = transform_image_train(dims)
     test_transform = transform_image_test(dims)
-    
+
     train_obj = PairedImageDataset(train_set, dims, train_transform)
     valid_obj = PairedImageDataset(valid_set, dims, test_transform)
     test_obj = PairedImageDataset(df_test, dims, test_transform)
