@@ -19,7 +19,6 @@ def separate_test_train(images_list, destination_folder, proportion_value=0.1):
         shutil.move(image_path, destination_folder)
         shutil.move(csv_path, destination_folder)
 
-    
 
 def create_imgs(cont, max_ent, num_file, folder_fodg, folder_img):
     init_control_flags()  # Init control flags to avoid redundancies

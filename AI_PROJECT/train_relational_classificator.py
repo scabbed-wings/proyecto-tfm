@@ -14,4 +14,3 @@ if __name__ == "__main__":
                                                                                             test_annotation_file, 
                                                                                             test_images_folder)
     train_model(train_dataloader, validation_dataloader, model)
-    
