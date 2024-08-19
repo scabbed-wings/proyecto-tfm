@@ -35,8 +35,8 @@ def resize_bounding_boxes(bounding_boxes, dims):
 if __name__ == "__main__":
     model_detector = model_defintion()
     detector_weights_path = "AI_PROJECT\output\model_25.pth"
-    classifier_weights_path = r"AI_PROJECT\output\classification_output\model_17.pth"
-    test_image = r"data_generator\test\img362.png"
+    classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_13.pth"
+    test_image = r"AI_PROJECT\descarga (1).png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model_detector, detector_weights_path, image, dims)
