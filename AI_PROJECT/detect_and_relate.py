@@ -11,7 +11,7 @@ from datasets.dataset import visualize_images
 import pickle
 
 
-def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, classifier_thresh=0.889):
+def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, classifier_thresh=0.9474):
     model = PairedImageClassifier()
     model.load_state_dict(torch.load(classifier_weights_path))
     for index_source, box_source in enumerate(pred_boxes):
@@ -21,7 +21,7 @@ def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, class
                 crop_image = image.crop((int(xmin), int(ymin), int(xmax), int(ymax)))
                 prediction = unitary_inference_classificator(model, image, crop_image)
                 if prediction >= classifier_thresh:
-                    print("ELEMENT SOURCE: ", index_source, " IS RELATED TO ELEMENT TARGET: ", index_target)
+                    print("ELEMENT SOURCE: ", index_source, " IS RELATED TO ELEMENT TARGET: ", index_target, " SCORE: ", prediction[0])
                 
 
 def resize_bounding_boxes(bounding_boxes, dims):
@@ -34,9 +34,9 @@ def resize_bounding_boxes(bounding_boxes, dims):
 
 if __name__ == "__main__":
     model_detector = model_defintion()
-    detector_weights_path = "AI_PROJECT\output\model_25.pth"
-    classifier_weights_path = r"AI_PROJECT\output\classification_output\model_17.pth"
-    test_image = r"data_generator\test\img362.png"
+    detector_weights_path = "AI_PROJECT\output\model_20.pth"
+    classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_21.pth"
+    test_image = r"AI_PROJECT\prueba.png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model_detector, detector_weights_path, image, dims)

@@ -9,8 +9,8 @@ if __name__ == "__main__":
     test_annotation_file = "data_generator/test_relational_images/labels.json"
     test_images_folder = "data_generator/test_relational_images/images"
     model = PairedImageClassifier()
-    train_dataloader, validation_dataloader, test_dataloader = create_classificator_dataset(train_annotation_file, 
+    train_dataloader, validation_dataloader, test_dataloader = create_classificator_dataset(train_annotation_file,
                                                                                             train_images_folder,
-                                                                                            test_annotation_file, 
+                                                                                            test_annotation_file,
                                                                                             test_images_folder)
     train_model(train_dataloader, validation_dataloader, model)

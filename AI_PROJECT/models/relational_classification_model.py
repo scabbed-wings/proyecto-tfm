@@ -2,12 +2,13 @@ import torch
 import torchvision.models as models
 from torchvision.models.mobilenetv3 import MobileNet_V3_Small_Weights
 
+
 class PairedImageClassifier(torch.nn.Module):
     def __init__(self):
         super(PairedImageClassifier, self).__init__()
         self.mobilenet = models.mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.DEFAULT)
-        self.mobilenet.features[0][0] = torch.nn.Conv2d(1, 16, kernel_size=(3, 3), 
-                                                        stride=(2, 2), 
+        self.mobilenet.features[0][0] = torch.nn.Conv2d(1, 16, kernel_size=(3, 3),
+                                                        stride=(2, 2),
                                                         padding=(1, 1), bias=False)
         # Eliminar la última capa fc de ResNet
         self.features = self.mobilenet.features
