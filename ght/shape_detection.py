@@ -3,11 +3,10 @@ from glob import glob
 import utils.detector.hough as H
 import matplotlib.pyplot as plt
 
-file_list = glob("img/*.png")
+file_list = glob("data_generator/test/*.png")
 alg = "guil"
 for elem in file_list[:4]:
     img = cv2.imread(elem)
-    
 
     # Uso de contornos y umbralizado para la detección de formas
     #_, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_OTSU)
@@ -23,6 +22,6 @@ for elem in file_list[:4]:
     #cv2.imshow("Img",img_res)
     #cv2.waitKey(0)
 
-H.ght_det(img, "r", alg)
+    H.ght_det(img, "r", alg)
 #H.ght_det(img, "e")
 #H.ght_det(img, "rh")
