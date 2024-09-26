@@ -6,11 +6,11 @@ import torchvision
 def model_defintion():
     model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(
             weights=FasterRCNN_MobileNet_V3_Large_FPN_Weights.DEFAULT)
-    model.rpn.score_thresh = 0.2
-    model.rpn.nms_thresh = 0.3
+    model.rpn.score_thresh = 0.4
+    model.rpn.nms_thresh = 0.6
     model.roi_heads.detections_per_img = 70
-    model.roi_heads.nms_thresh = 0.3
-    model.roi_heads.score_thresh = 0.1
+    model.roi_heads.nms_thresh = 0.5
+    model.roi_heads.score_thresh = 0.3
     # model.rpn._post_nms_top_n["testing"] = 1500
     # model.rpn._post_nms_top_n["training"] = 2000
     # model.transform.image_mean = [0.9844960020963516, 0.9844960020963516, 0.9844960020963516]

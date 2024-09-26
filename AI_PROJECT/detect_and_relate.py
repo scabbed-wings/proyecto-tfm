@@ -34,7 +34,7 @@ def resize_bounding_boxes(bounding_boxes, dims):
 
 if __name__ == "__main__":
     model_detector = model_defintion()
-    detector_weights_path = "AI_PROJECT\output\model_20.pth"
+    detector_weights_path = "AI_PROJECT\output\model_15.pth"
     classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_21.pth"
     test_image = r"AI_PROJECT\prueba.png"
     dims = (320, 320)

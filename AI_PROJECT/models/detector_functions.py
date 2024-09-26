@@ -6,7 +6,7 @@ from datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
 import os
 from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
-                         nms_filter_boxes, evaluate_predictions, test_transform)
+                          nms_filter_boxes, evaluate_predictions, test_transform)
 
 
 def checkpoint(model, filedir, epoch):
@@ -76,7 +76,7 @@ def train_model(train_data_loader, valid_data_loader,
             print(f"Epoch #{epoch} loss: {loss_hist.value}")
 
 
-def inference_test(weights_file, model, test_dataloader):
+def inference_test(weights_file, model, test_dataloader, iou_threshold):
     model.load_state_dict(torch.load(weights_file))
     device = get_cuda_device()
     model.to(device)
@@ -89,7 +89,7 @@ def inference_test(weights_file, model, test_dataloader):
                 boxes = output[ind]['boxes'].data.cpu()
                 labels = output[ind]['labels'].data.cpu()
                 scores = output[ind]['scores'].data.cpu()
-                filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
+                filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, iou_threshold)
                 new_image = image.data.cpu()
                 visualize_images(new_image, filtered_boxes, filtered_labels, inference=True)
 
@@ -106,14 +106,17 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
         for images, targets in data_loader:
             images = [image.to(device) for image in images]
             outputs = model(images)
-            
+
             for i, output in enumerate(outputs):
                 gt_boxes = targets[i]['boxes'].cpu().numpy()
                 gt_labels = targets[i]['labels'].cpu().numpy()
                 pred_boxes = output['boxes'].data.cpu()
                 pred_scores = output['scores'].data.cpu()
                 pred_labels = output['labels'].data.cpu()
-                filtered_boxes, filtered_labels, filtered_scores = nms_filter_boxes(pred_boxes, pred_scores, pred_labels, 0.15)
+                filtered_boxes, filtered_labels, filtered_scores = nms_filter_boxes(pred_boxes,
+                                                                                    pred_scores,
+                                                                                    pred_labels,
+                                                                                    iou_threshold)
                 filtered_boxes = filtered_boxes.numpy()
                 filtered_labels = filtered_labels.numpy()
                 filtered_scores = filtered_scores.numpy()
