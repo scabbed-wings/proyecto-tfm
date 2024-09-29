@@ -8,8 +8,8 @@ def model_defintion():
             weights=FasterRCNN_MobileNet_V3_Large_FPN_Weights.DEFAULT)
     model.rpn.score_thresh = 0.4
     model.rpn.nms_thresh = 0.6
-    model.roi_heads.detections_per_img = 70
-    model.roi_heads.nms_thresh = 0.5
+    model.roi_heads.detections_per_img = 150
+    model.roi_heads.nms_thresh = 0.6
     model.roi_heads.score_thresh = 0.3
     # model.rpn._post_nms_top_n["testing"] = 1500
     # model.rpn._post_nms_top_n["training"] = 2000

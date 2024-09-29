@@ -5,28 +5,51 @@ from datasets.dataset import visualize_images
 from datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
 import os
+from pathlib import Path
 from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
                           nms_filter_boxes, evaluate_predictions, test_transform)
 
 
-def checkpoint(model, filedir, epoch):
-    filename = os.path.join(filedir, f"model_{epoch}.pth")
-    torch.save(model.state_dict(), filename)
+def checkpoint(model, filedir, experiment_name, epoch, best):
+    file_parent = Path(os.path.join(filedir, experiment_name))
+    file_parent.mkdir(parents=True, exist_ok=True)
+    file_name = f"best_model_{epoch}.pth" if best else f"model_{epoch}.pth"
+    file_name = os.path.join(file_parent, file_name)
+    torch.save(model.state_dict(), file_name)
+
+
+def eval_checkpoint(model, validation_dataloader, device):
+    mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
+    model.eval()
+    with torch.no_grad():
+        for images, valid_targets in validation_dataloader:
+            print("Validation images: ", len(images))
+            images = list(image.to(device) for image in images)
+            valid_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in valid_targets]
+            output = model(images)
+            output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
+            filtered_output = nms_on_output_dictionary(output, iou_threshold=0.15)
+            mAP.update(preds=filtered_output, target=valid_targets)
+    metrics = mAP.compute()
+    print(metrics)
+    return metrics
 
 
 def train_model(train_data_loader, valid_data_loader,
-                model,
-                save_checkpoint="AI_PROJECT/output/"):
+                model, experiment_name,
+                save_checkpoint="AI_PROJECT/output/detector_models/",
+                epochs = 30,
+                lr = 0.001,
+                performance_parameter = 'map'):
     device = get_cuda_device()
     print("Training on: ", device)
     model.to(device)
     params = [p for p in model.parameters() if p.requires_grad]
     # optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.01)
-    optimizer = torch.optim.Adam(params, lr=0.001)
+    optimizer = torch.optim.Adam(params, lr=lr)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
-    mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
-    num_epochs = 30
-
+    num_epochs = epochs
+    best_metric_value = 0
     loss_hist = Averager()
     itr = 1
 
@@ -55,25 +78,19 @@ def train_model(train_data_loader, valid_data_loader,
 
             itr += 1
 
-        model.eval()
-        with torch.no_grad():
-            for images, valid_targets in valid_data_loader:
-                print("Validation images: ", len(images))
-                images = list(image.to(device) for image in images)
-                valid_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in valid_targets]
-                output = model(images)
-                output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
-                filtered_output = nms_on_output_dictionary(output, iou_threshold=0.15)
-                mAP.update(preds=filtered_output, target=valid_targets)
-                metrics = mAP.compute()
-                print(metrics)
-            # update the learning rate
-            if lr_scheduler is not None:
-                lr_scheduler.step()
-            if (epoch + 1) % 5 == 0:
-                checkpoint(model, save_checkpoint, epoch=epoch+1)
+        metrics = eval_checkpoint(model, valid_data_loader, device)
+        
+        # update the learning rate
+        if lr_scheduler is not None:
+            lr_scheduler.step()
+        
+        if (epoch + 1) % 5 == 0:
+            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=False)
+        elif metrics[performance_parameter] > best_metric_value:
+            best_metric_value = metrics[performance_parameter]
+            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=True)
 
-            print(f"Epoch #{epoch} loss: {loss_hist.value}")
+        print(f"Epoch #{epoch} loss: {loss_hist.value}")
 
 
 def inference_test(weights_file, model, test_dataloader, iou_threshold):
