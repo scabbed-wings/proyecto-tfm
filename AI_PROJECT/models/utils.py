@@ -4,11 +4,7 @@ import torchvision.transforms as TT
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
-
-
-def get_cuda_device():
-    # return torch.device('cuda' if torch.cuda.is_available() else "cpu")
-    return torch.device("cpu")
+from sklearn.preprocessing import label_binarize
 
 
 class Averager:      # Return the average loss
@@ -30,6 +26,23 @@ class Averager:      # Return the average loss
     def reset(self):
         self.current_total = 0.0
         self.iterations = 0.0
+
+
+def get_cuda_device():
+    # return torch.device('cuda' if torch.cuda.is_available() else "cpu")
+    return torch.device("cpu")
+
+
+def flatten_list(labels):
+    new_list = []
+    for list in labels:
+        new_list += list
+    return new_list
+
+
+def create_PRC_2(gt_labels, pred_scores, num_classes=3):
+    classes = [i for i in range(1, num_classes + 1)]
+    label_binarizer = label_binarize(gt_labels ,classes=classes)
 
 
 def nms_filter_boxes(result_boxes, result_scores, result_labels, iou_threshold):

@@ -1,13 +1,17 @@
 import torch
 import torch.utils
 import torch.utils.data
+import torch.nn.functional as F
 from datasets.dataset import visualize_images
+from torchvision.models.detection.image_list import ImageList
 from datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
 import os
+from tqdm import tqdm
 from pathlib import Path
-from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary,
-                          nms_filter_boxes, evaluate_predictions, test_transform)
+from models.detector_utils.detector_inference import get_logits_and_probabilities
+from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary, flatten_list,
+                          nms_filter_boxes, evaluate_predictions, test_transform, create_PRC_2)
 
 
 def checkpoint(model, filedir, experiment_name, epoch, best):
@@ -22,7 +26,7 @@ def eval_checkpoint(model, validation_dataloader, device):
     mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
     model.eval()
     with torch.no_grad():
-        for images, valid_targets in validation_dataloader:
+        for images, valid_targets in tqdm(validation_dataloader):
             print("Validation images: ", len(images))
             images = list(image.to(device) for image in images)
             valid_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in valid_targets]
@@ -58,7 +62,8 @@ def train_model(train_data_loader, valid_data_loader,
         train_dataloader = torch.utils.data.DataLoader(train_data_loader, 128, collate_fn=collate_function_detector,
                                                        pin_memory=True, num_workers=4)
         model.train()
-        for images, targets in train_dataloader:
+        print("Training epoch ", epoch)
+        for images, targets in tqdm(train_dataloader):
 
             images = list(image.to(device) for image in images)
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
@@ -78,17 +83,19 @@ def train_model(train_data_loader, valid_data_loader,
 
             itr += 1
 
+        print("Evaluating epoch ", epoch)
         metrics = eval_checkpoint(model, valid_data_loader, device)
         
         # update the learning rate
         if lr_scheduler is not None:
             lr_scheduler.step()
         
-        if (epoch + 1) % 5 == 0:
-            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=False)
-        elif metrics[performance_parameter] > best_metric_value:
+        if metrics[performance_parameter] > best_metric_value:
             best_metric_value = metrics[performance_parameter]
             checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=True)
+        elif (epoch + 1) % 5 == 0:
+            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=False)
+        
 
         print(f"Epoch #{epoch} loss: {loss_hist.value}")
 
@@ -143,6 +150,34 @@ def get_inference_and_metrics(weights_file, model, data_loader, num_classes, iou
                     y_scores[class_id].extend(filtered_scores[filtered_labels == class_id])
 
     return y_true, y_scores
+
+
+def metrics_with_torchmetrics(weights_file, model, dataloader, iou_threshold=0.5):
+    model.load_state_dict(torch.load(weights_file))
+    mAP = MeanAveragePrecision(box_format="xyxy", iou_type="bbox", class_metrics=True)
+    device = get_cuda_device()
+    model.to(device)
+    model.eval()
+
+    gt_labels = []
+    pred_scores = []
+    with torch.no_grad():
+        for images, test_targets in dataloader:
+                # result = get_logits_and_probabilities(model, images)
+                images = list(image.to(device) for image in images)
+                test_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in test_targets]
+                output = model(images)
+                #print("Output: ", output)
+                gt_labels += [torch.flatten(target['labels']).cpu().tolist() for target in test_targets]
+                output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
+                filtered_output = nms_on_output_dictionary(output, iou_threshold=iou_threshold)
+                pred_scores += [prediction["scores"] for prediction in filtered_output]
+                mAP.update(preds=filtered_output, target=test_targets)
+    gt_labels = flatten_list(gt_labels)
+    pred_scores = flatten_list(pred_scores)
+    create_PRC_2(gt_labels, pred_scores, 3)
+    metrics = mAP.compute()
+    print(metrics)
 
 
 def unitary_inference(model, weights_file, image, dims=(320, 320)):

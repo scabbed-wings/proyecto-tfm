@@ -24,3 +24,4 @@
 /pred_boxes.pkl
 /pred_labels.pkl
 /AI_PROJECT/*.png
+/AI_PROJECT/models/detector_utils_experimental/__pycache__
