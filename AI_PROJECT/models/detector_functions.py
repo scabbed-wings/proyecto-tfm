@@ -9,7 +9,7 @@ from torchmetrics.detection import MeanAveragePrecision
 import os
 from tqdm import tqdm
 from pathlib import Path
-from models.detector_utils.detector_inference import get_logits_and_probabilities
+# from models.detector_utils.detector_inference import get_logits_and_probabilities
 from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary, flatten_list,
                           nms_filter_boxes, evaluate_predictions, test_transform, create_PRC_2)
 

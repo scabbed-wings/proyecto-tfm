@@ -1,0 +1,9 @@
+output
+datasets/utils/__pycache__
+models/__pycache__
+datasets/__pycache__
+datasets/utils/transform/__pycache__
+relator/__pycache__
+test_detect_and_relate.pyç
+/*.png
+models/detector_utils_experimental/__pycache__
