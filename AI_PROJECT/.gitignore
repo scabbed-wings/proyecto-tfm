@@ -7,3 +7,4 @@ relator/__pycache__
 test_detect_and_relate.pyç
 /*.png
 models/detector_utils_experimental/__pycache__
+__pycache__

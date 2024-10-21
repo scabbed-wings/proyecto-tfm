@@ -24,7 +24,7 @@ def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, class
                     print("ELEMENT SOURCE: ", index_source, " IS RELATED TO ELEMENT TARGET: ", index_target, " SCORE: ", prediction[0])
                 
 
-def resize_bounding_boxes(bounding_boxes, dims):
+def resize_bounding_boxes(image: Image, bounding_boxes, dims):
     original_size_tensor = torch.tensor([image.width, image.height, image.width, image.height])
     resized_tensor = torch.tensor([dims[0], dims[1], dims[0], dims[1]])
     prop_pred_boxes = bounding_boxes / resized_tensor
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model_detector, detector_weights_path, image, dims)
-    original_size_pred_boxes = resize_bounding_boxes(pred_boxes, dims)
+    original_size_pred_boxes = resize_bounding_boxes(image, pred_boxes, dims)
     image = image.convert('L')
     crop_detections_and_relate(image, original_size_pred_boxes, classifier_weights_path)
     # with open('pred_boxes.pkl', 'wb') as file_boxes:

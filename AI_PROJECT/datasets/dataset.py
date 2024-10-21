@@ -74,7 +74,7 @@ def process_data_box_unit(dataset_folder: str,
 
 
 def process_data_bboxes(dataset_folder: str, not_background: bool = True):
-    image_list = glob(dataset_folder + "/*.png")
+    image_list = glob(dataset_folder + "/*.png") + glob(dataset_folder + "/*.jpg")
     output_list = []
     for file in image_list:
         img_path = Path(file)
