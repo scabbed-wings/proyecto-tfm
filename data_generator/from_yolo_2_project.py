@@ -94,10 +94,10 @@ def transform_yolo_labels(input_folder: str, output_folder: str):
             new_labels = modify_labels_2_project(df, width, height)
             copy2(img, output_path)
             output_label_name = os.path.join(output_folder, f"{img_name}.csv")
-            new_labels.to_csv(output_label_name, sep=";", columns=COLS, index=None)
+            new_labels.to_csv(output_label_name, sep=";", columns=COLS)
 
 
 if __name__ == "__main__":
-    folder = "data_generator/Validation_Detection"
-    output_folder = "data_generator/real_images"
+    folder = "data_generator/Train_Detection"
+    output_folder = "data_generator/real_images_2"
     transform_yolo_labels(folder, output_folder)

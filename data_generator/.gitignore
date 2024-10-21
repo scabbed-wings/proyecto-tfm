@@ -10,3 +10,5 @@ test
 real_images
 Validation_Detection
 utils/__pycache__
+Train_Detection
+real_images_2
