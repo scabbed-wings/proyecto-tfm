@@ -1,17 +1,16 @@
 import torch
 import torch.utils
 import torch.utils.data
-import torch.nn.functional as F
 from datasets.dataset import visualize_images
-from torchvision.models.detection.image_list import ImageList
 from datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
+from PIL import Image
 import os
 from tqdm import tqdm
 from pathlib import Path
 # from models.detector_utils.detector_inference import get_logits_and_probabilities
 from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary, flatten_list,
-                          nms_filter_boxes, evaluate_predictions, test_transform, create_PRC_2)
+                          nms_filter_boxes, evaluate_predictions, test_transform)
 
 
 def checkpoint(model, filedir, experiment_name, epoch, best):
@@ -42,9 +41,9 @@ def eval_checkpoint(model, validation_dataloader, device):
 def train_model(train_data_loader, valid_data_loader,
                 model, experiment_name,
                 save_checkpoint="AI_PROJECT/output/detector_models/",
-                epochs = 30,
-                lr = 0.001,
-                performance_parameter = 'map'):
+                epochs=30,
+                lr=0.001,
+                performance_parameter='map'):
     device = get_cuda_device()
     print("Training on: ", device)
     model.to(device)
@@ -85,17 +84,16 @@ def train_model(train_data_loader, valid_data_loader,
 
         print("Evaluating epoch ", epoch)
         metrics = eval_checkpoint(model, valid_data_loader, device)
-        
+
         # update the learning rate
         if lr_scheduler is not None:
             lr_scheduler.step()
-        
+
         if metrics[performance_parameter] > best_metric_value:
             best_metric_value = metrics[performance_parameter]
             checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=True)
         elif (epoch + 1) % 5 == 0:
             checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=False)
-        
 
         print(f"Epoch #{epoch} loss: {loss_hist.value}")
 
@@ -163,21 +161,28 @@ def metrics_with_torchmetrics(weights_file, model, dataloader, iou_threshold=0.5
     pred_scores = []
     with torch.no_grad():
         for images, test_targets in dataloader:
-                # result = get_logits_and_probabilities(model, images)
-                images = list(image.to(device) for image in images)
-                test_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in test_targets]
-                output = model(images)
-                #print("Output: ", output)
-                gt_labels += [torch.flatten(target['labels']).cpu().tolist() for target in test_targets]
-                output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
-                filtered_output = nms_on_output_dictionary(output, iou_threshold=iou_threshold)
-                pred_scores += [prediction["scores"] for prediction in filtered_output]
-                mAP.update(preds=filtered_output, target=test_targets)
+            # result = get_logits_and_probabilities(model, images)
+            images = list(image.to(device) for image in images)
+            test_targets = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in test_targets]
+            output = model(images)
+            # print("Output: ", output)
+            gt_labels += [torch.flatten(target['labels']).cpu().tolist() for target in test_targets]
+            output = [{k: v.to(torch.device("cuda")) for k, v in t.items()} for t in output]
+            filtered_output = nms_on_output_dictionary(output, iou_threshold=iou_threshold)
+            pred_scores += [prediction["scores"] for prediction in filtered_output]
+            mAP.update(preds=filtered_output, target=test_targets)
     gt_labels = flatten_list(gt_labels)
     pred_scores = flatten_list(pred_scores)
-    create_PRC_2(gt_labels, pred_scores, 3)
     metrics = mAP.compute()
     print(metrics)
+
+
+def resize_bounding_boxes(image: Image, bounding_boxes, dims):
+    original_size_tensor = torch.tensor([image.width, image.height, image.width, image.height])
+    resized_tensor = torch.tensor([dims[0], dims[1], dims[0], dims[1]])
+    prop_pred_boxes = bounding_boxes / resized_tensor
+    original_size_pred_boxes = prop_pred_boxes * original_size_tensor
+    return original_size_pred_boxes
 
 
 def unitary_inference(model, weights_file, image, dims=(320, 320)):
@@ -201,3 +206,19 @@ def unitary_inference(model, weights_file, image, dims=(320, 320)):
         new_image = processed_image.data.cpu()
         new_image = new_image.squeeze(0)
         return filtered_boxes, filtered_labels
+
+
+def loaded_unitary_inference(model, device, image, dims=(320, 320)):
+    transform = test_transform(dims)
+    processed_image = transform(image)
+    processed_image = processed_image.unsqueeze(0)
+    with torch.no_grad():
+        processed_image = processed_image.to(device)
+        output = model(processed_image)[0]
+        boxes = output['boxes'].data.cpu()
+        labels = output['labels'].data.cpu()
+        scores = output['scores'].data.cpu()
+        filtered_boxes, filtered_labels, _ = nms_filter_boxes(boxes, scores, labels, 0.15)
+        new_image = processed_image.data.cpu()
+        new_image = new_image.squeeze(0)
+    return filtered_boxes, filtered_labels

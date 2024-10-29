@@ -1,10 +1,8 @@
 import torch
 from torchvision.ops import box_iou, nms
 import torchvision.transforms as TT
-import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_curve
-from sklearn.preprocessing import label_binarize
 
 
 class Averager:      # Return the average loss
@@ -38,11 +36,6 @@ def flatten_list(labels):
     for list in labels:
         new_list += list
     return new_list
-
-
-def create_PRC_2(gt_labels, pred_scores, num_classes=3):
-    classes = [i for i in range(1, num_classes + 1)]
-    label_binarizer = label_binarize(gt_labels ,classes=classes)
 
 
 def nms_filter_boxes(result_boxes, result_scores, result_labels, iou_threshold):
@@ -94,15 +87,15 @@ def create_PRC(y_true, y_scores, num_classes):
     styles = ["-r", "-g", "-b"]
     class_name = ["Entity", "Attribute", "Relation"]
     fig, axis = plt.subplots(num_classes)
-    
+
     for class_id in range(1, num_classes+1):
         precision, recall, thresholds = precision_recall_curve(y_true[class_id], y_scores[class_id])
-        
+
         axis[class_id - 1].plot(recall, precision, styles[class_id - 1], label=f'Class {class_name[class_id - 1]}')
         axis[class_id - 1].set_title(class_name[class_id - 1])
         axis[class_id - 1].set_xlabel('Recall')
         axis[class_id - 1].set_ylabel('Precision')
-        
+
     fig.suptitle('Precision-Recall Curve for Each Class')
     fig.savefig('metrics_model.png')
     plt.show()

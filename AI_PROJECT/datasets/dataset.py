@@ -5,10 +5,8 @@ import pandas as pd
 import numpy as np
 import cv2
 import os
-from sklearn.model_selection import train_test_split
-from datasets.utils.transformations import get_transforms, get_mean_std
-from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
+import json
 
 OG_WIDTH, OG_HEIGHT = 1181, 1545
 
@@ -108,3 +106,23 @@ def balance_dataset(df: pd.DataFrame, target_column: str = 'label'):
     df_resampled = pd.concat([df_minority, df_majority_downsampled])
 
     return df_resampled
+
+
+def process_related_objetcs(related_objects: np.ndarray):
+    new_related = []
+    for elem in related_objects:
+        related_list = json.loads(elem)
+        new_related.append(related_list)
+    return new_related
+
+
+def process_relational_data(annotations_path: str):
+    annotations = pd.read_csv(annotations_path, sep=";", index_col=0)
+    bboxes = annotations[["x_min", "y_min", "x_max", "y_max"]].values
+    labels = annotations["class"].values + 1
+    ids = annotations["id"].values
+    related_objects = annotations["related_objects"].values
+    bboxes_tensor = torch.FloatTensor(bboxes)
+    labels_tensor = torch.IntTensor(labels).to(torch.int64)
+    related_objects = process_related_objetcs(related_objects)
+    return bboxes_tensor, labels_tensor, ids, related_objects

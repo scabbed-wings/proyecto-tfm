@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from datasets.utils.custom_dataset import CustomBBoxDataset
 from torch.utils.data import DataLoader
 from datasets.utils.transformations import collate_function_detector
-from datasets.dataset import visualize_images
 
 
 def get_torch_dataloader(dims, dataset_path="data_generator/img_fractional",
@@ -23,4 +22,3 @@ def get_torch_dataloader(dims, dataset_path="data_generator/img_fractional",
                                    collate_fn=collate_function_detector, num_workers=1)
 
     return train_set_obj, valid_data_loader, test_data_loader
-

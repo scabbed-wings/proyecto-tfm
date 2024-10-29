@@ -1,14 +1,13 @@
-from models.detector_functions import unitary_inference
+from models.detector_functions import unitary_inference, resize_bounding_boxes
 from models.detector_definition import model_defintion
 from models.relational_classification_model import PairedImageClassifier
 from models.relational_classification_functions import unitary_inference_classificator
-from relator.read_bboxes import read_box
-from relator.follow_line_algorithm import max_min_coordinates
+# from relator.read_bboxes import read_box
+from relator.utils import max_min_coordinates
 import torch
 from torchvision.transforms.functional import pil_to_tensor
 from PIL import Image
 from datasets.dataset import visualize_images
-import pickle
 
 
 def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, classifier_thresh=0.9474):
@@ -21,21 +20,14 @@ def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, class
                 crop_image = image.crop((int(xmin), int(ymin), int(xmax), int(ymax)))
                 prediction = unitary_inference_classificator(model, image, crop_image)
                 if prediction >= classifier_thresh:
-                    print("ELEMENT SOURCE: ", index_source, " IS RELATED TO ELEMENT TARGET: ", index_target, " SCORE: ", prediction[0])
-                
-
-def resize_bounding_boxes(image: Image, bounding_boxes, dims):
-    original_size_tensor = torch.tensor([image.width, image.height, image.width, image.height])
-    resized_tensor = torch.tensor([dims[0], dims[1], dims[0], dims[1]])
-    prop_pred_boxes = bounding_boxes / resized_tensor
-    original_size_pred_boxes = prop_pred_boxes * original_size_tensor
-    return original_size_pred_boxes
+                    print("ELEMENT SOURCE: ", index_source, " IS RELATED TO ELEMENT TARGET: ", index_target,
+                          " SCORE: ", prediction[0])
 
 
 if __name__ == "__main__":
     model_detector = model_defintion()
-    detector_weights_path = "AI_PROJECT\output\model_15.pth"
-    classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_21.pth"
+    detector_weights_path = r"AI_PROJECT\output\model_15.pth"
+    classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_13.pth"
     test_image = r"AI_PROJECT\prueba.png"
     dims = (320, 320)
     image = Image.open(test_image)
@@ -45,7 +37,6 @@ if __name__ == "__main__":
     crop_detections_and_relate(image, original_size_pred_boxes, classifier_weights_path)
     # with open('pred_boxes.pkl', 'wb') as file_boxes:
     #     pickle.dump(original_size_pred_boxes, file_boxes)
-    # 
     # with open('pred_labels.pkl', 'wb') as file_labels:
     #     pickle.dump(pred_labels, file_labels)
     image_tensor = pil_to_tensor(image)
