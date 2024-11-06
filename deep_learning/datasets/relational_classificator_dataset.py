@@ -1,6 +1,6 @@
-from datasets.utils.transformations import collate_function_classificator
-from datasets.dataset import process_data_classificator, balance_dataset
-from datasets.utils.custom_dataset import PairedImageDataset
+from deep_learning.datasets.utils.transformations import collate_function_classificator
+from deep_learning.datasets.dataset import process_data_classificator, balance_dataset
+from deep_learning.datasets.utils.custom_dataset import PairedImageDataset
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from torchvision import transforms

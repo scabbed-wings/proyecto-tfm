@@ -1,6 +1,6 @@
 import cv2
 import matplotlib.pyplot as plt
-from relator.utils import max_min_coordinates, already_detected
+from visual_relation_detector.src.utils import max_min_coordinates, already_detected
 
 
 def relation_is_valid(label_source, label_target):

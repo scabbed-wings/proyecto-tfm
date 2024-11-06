@@ -1,7 +1,7 @@
-from models.relational_classification_model import PairedImageClassifier
-import torch
-from models.detector_definition import model_defintion
+from deep_learning.models.relational_classification_model import PairedImageClassifier
+from deep_learning.models.detector_definition import model_defintion
 from collections import Counter
+import torch
 
 
 def max_min_coordinates(bbox1, bbox2):

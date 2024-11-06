@@ -1,7 +1,8 @@
 import torchvision.transforms.functional as FT
 import random
 import torch
-from datasets.utils.transform.utils import find_jaccard_overlap
+from deep_learning.datasets.utils.transform.utils import find_jaccard_overlap
+
 
 def resize(image, boxes, dims=(300, 300), return_percent_coords=False):
     """
@@ -12,7 +13,8 @@ def resize(image, boxes, dims=(300, 300), return_percent_coords=False):
 
     :param image: image, a PIL Image
     :param boxes: bounding boxes in boundary coordinates, a tensor of dimensions (n_objects, 4)
-    :return: resized image, updated bounding box coordinates (or fractional coordinates, in which case they remain the same)
+    :return: resized image, updated bounding box coordinates (or fractional coordinates, in which case they remain the
+            same)
     """
     # Resize image
     new_image = FT.resize(image, dims)
@@ -131,7 +133,7 @@ def random_crop(image, boxes, labels):
             new_boxes[:, 2:] -= crop[:2]
 
             return new_image, new_boxes, new_labels
-        
+
 
 def expand(image, boxes, filler):
     """

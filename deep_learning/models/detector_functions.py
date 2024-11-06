@@ -1,16 +1,16 @@
 import torch
 import torch.utils
 import torch.utils.data
-from datasets.dataset import visualize_images
-from datasets.utils.transformations import collate_function_detector
+from deep_learning.datasets.dataset import visualize_images
+from deep_learning.datasets.utils.transformations import collate_function_detector
 from torchmetrics.detection import MeanAveragePrecision
 from PIL import Image
 import os
 from tqdm import tqdm
 from pathlib import Path
 # from models.detector_utils.detector_inference import get_logits_and_probabilities
-from models.utils import (get_cuda_device, Averager, nms_on_output_dictionary, flatten_list,
-                          nms_filter_boxes, evaluate_predictions, test_transform)
+from deep_learning.models.utils import (get_cuda_device, Averager, nms_on_output_dictionary, flatten_list,
+                                        nms_filter_boxes, evaluate_predictions, test_transform)
 
 
 def checkpoint(model, filedir, experiment_name, epoch, best):

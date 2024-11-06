@@ -3,12 +3,12 @@ from torch.utils.data import Dataset
 from PIL import Image
 import torch.utils.data
 import torch
-import numpy as np
-from datasets.utils.transform.transform import transform
-from models.utils import get_cuda_device
+from deep_learning.datasets.utils.transform.transform import transform
+from deep_learning.models.utils import get_cuda_device
+
 
 class CustomBBoxDataset(Dataset):
-    def __init__(self, tensors, split, size=(300,300)):
+    def __init__(self, tensors, split, size=(300, 300)):
         self.tensors = tensors
         self.split = split.upper()
         self.device = get_cuda_device()
@@ -16,10 +16,9 @@ class CustomBBoxDataset(Dataset):
 
         assert self.split in {'TRAIN', 'TEST'}
 
-    
     def __len__(self):
         return self.tensors.shape[0]
-    
+
     def __getitem__(self, idx):
         image = Image.open(self.tensors.iloc[idx, 0]).convert('L')
         boxes = torch.FloatTensor(self.tensors.iloc[idx, 1])
@@ -34,7 +33,7 @@ class CustomBBoxDataset(Dataset):
 
 
 class PairedImageDataset(Dataset):
-    def __init__(self, data, size=(300,300), transform=None):
+    def __init__(self, data, size=(300, 300), transform=None):
         self.data = data
         self.transform = transform
 
@@ -42,7 +41,6 @@ class PairedImageDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        
         image_source = Image.open(self.data.iloc[idx, 0]).convert('L')
         image_crop = Image.open(self.data.iloc[idx, 1]).convert('L')
         label = torch.tensor(self.data.iloc[idx, 2], dtype=torch.float32)
@@ -52,6 +50,5 @@ class PairedImageDataset(Dataset):
         if self.transform:
             image = self.transform(image_source)
             crop = self.transform(image_crop)
-
 
         return image, crop, label

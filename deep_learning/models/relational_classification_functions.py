@@ -2,7 +2,7 @@ import torch
 from torchmetrics.classification import BinaryAccuracy, BinaryPrecision, BinaryRecall, BinaryROC, BinaryF1Score
 import matplotlib.pyplot as plt
 import os
-from datasets.relational_classificator_dataset import transform_image_test
+from deep_learning.datasets.relational_classificator_dataset import transform_image_test
 
 
 def checkpoint(model, filedir, epoch, best):

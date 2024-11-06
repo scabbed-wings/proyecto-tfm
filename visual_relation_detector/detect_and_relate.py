@@ -1,13 +1,13 @@
-from models.detector_functions import unitary_inference, resize_bounding_boxes
-from models.detector_definition import model_defintion
-from models.relational_classification_model import PairedImageClassifier
-from models.relational_classification_functions import unitary_inference_classificator
+from deep_learning.models.detector_functions import unitary_inference, resize_bounding_boxes
+from deep_learning.models.detector_definition import model_defintion
+from deep_learning.models.relational_classification_model import PairedImageClassifier
+from deep_learning.models.relational_classification_functions import unitary_inference_classificator
 # from relator.read_bboxes import read_box
-from relator.utils import max_min_coordinates
+from visual_relation_detector.src.utils import max_min_coordinates
 import torch
 from torchvision.transforms.functional import pil_to_tensor
 from PIL import Image
-from datasets.dataset import visualize_images
+from deep_learning.datasets.dataset import visualize_images
 
 
 def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, classifier_thresh=0.9474):
@@ -26,9 +26,9 @@ def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, class
 
 if __name__ == "__main__":
     model_detector = model_defintion()
-    detector_weights_path = r"AI_PROJECT\output\model_15.pth"
-    classifier_weights_path = r"AI_PROJECT\output\classification_output\best_model_13.pth"
-    test_image = r"AI_PROJECT\prueba.png"
+    detector_weights_path = r"deep_learning\output\model_15.pth"
+    classifier_weights_path = r"deep_learning\output\classification_output\best_model_13.pth"
+    test_image = r"deep_learning\prueba.png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model_detector, detector_weights_path, image, dims)

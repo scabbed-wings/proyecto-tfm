@@ -1,14 +1,14 @@
 from pathlib import Path
 from glob import glob
-from datasets.dataset import process_relational_data
-from models.detector_functions import loaded_unitary_inference, resize_bounding_boxes
-from models.relational_classification_functions import unitary_inference_classificator
+from deep_learning.datasets.dataset import process_relational_data
+from deep_learning.models.detector_functions import loaded_unitary_inference, resize_bounding_boxes
+from deep_learning.models.relational_classification_functions import unitary_inference_classificator
 from PIL import Image
 from torchvision.ops import box_iou
-from relator.metric_calculator import MetricCalculator
-from relator.follow_line_algorithm import follow_lines
+from visual_relation_detector.src.metric_calculator import MetricCalculator
+from visual_relation_detector.src.follow_line_algorithm import follow_lines
 from tqdm import tqdm
-from relator.utils import already_detected, max_min_coordinates
+from visual_relation_detector.src.utils import already_detected, max_min_coordinates
 from collections import Counter
 import numpy as np
 import cv2

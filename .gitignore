@@ -4,3 +4,5 @@
 /utils/model_positions_copy.py
 /pred_boxes.pkl
 /pred_labels.pkl
+/build
+/tfm.egg-info

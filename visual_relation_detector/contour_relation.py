@@ -1,17 +1,17 @@
-from models.detector_functions import unitary_inference
-from models.detector_definition import model_defintion
-from datasets.dataset import visualize_images
+from deep_learning.models.detector_functions import unitary_inference
+from deep_learning.models.detector_definition import model_defintion
+from deep_learning.datasets.dataset import visualize_images
 from torchvision.transforms.functional import pil_to_tensor
 import numpy as np
 from detect_and_relate import resize_bounding_boxes
-from relator.follow_line_algorithm import follow_lines
+from visual_relation_detector.src.follow_line_algorithm import follow_lines
 from PIL import Image
 import cv2
 
 
 if __name__ == "__main__":
     model_detector = model_defintion()
-    detector_weights_path = r"AI_PROJECT\output\model_15.pth"
+    detector_weights_path = r"deep_learning\output\model_15.pth"
     test_image = r"data_generator\test\img392.png"
     dims = (320, 320)
     image = Image.open(test_image)

@@ -126,7 +126,7 @@ def test_hough(temp_list, im_path):
 
 if __name__ == "__main__":
     # path_im = "utils/detector/prueba.png"
-    path_im = "data_generator/test/img30.png"
+    path_im = "data_generator/test/img22.png"
     # paths_temp = ["ght/utils/detector/ellipse_xl.png", "ght/utils/detector/ellipse2.png", "ght/utils/detector/ellipse.png"]
     paths_temp = ["ght/utils/detector/rhombus_xl.png", "ght/utils/detector/rhombus.png"]
     test_hough(paths_temp, path_im)

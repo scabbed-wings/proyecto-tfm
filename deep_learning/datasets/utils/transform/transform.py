@@ -1,10 +1,10 @@
 import torchvision.transforms.functional as FT
 import random
-import datasets.utils.transform.transform_operations as TO
+import deep_learning.datasets.utils.transform.transform_operations as TO
 
 
 def transform(images, bboxes, labels, split, dims=(300, 300)):
-    mean = (0.9844960020963516,)  
+    mean = (0.9844960020963516,)
     std = (0.11468420904814396,)
     new_image = images
     new_bboxes = bboxes
