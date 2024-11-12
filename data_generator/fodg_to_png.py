@@ -59,9 +59,9 @@ if __name__ == "__main__":
     f = open("data_generator/head.xml", "r", encoding="UTF-8")
     contents = f.read()
     f.close()
-    path_folder_files = f'''data_generator/fodg'''
-    path_folder_img = f'''data_generator/img_fractional'''
-    dataset_output = f'''data_generator/test'''
+    path_folder_files = "data_generator/fodg"
+    path_folder_img = "data_generator/img_fractional"
+    dataset_output = "data_generator/test"
 
     if not os.path.isdir(path_folder_files):
         os.mkdir(path_folder_files)

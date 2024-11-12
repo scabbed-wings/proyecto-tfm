@@ -10,7 +10,6 @@ class PairedImageClassifier(torch.nn.Module):
         self.mobilenet.features[0][0] = torch.nn.Conv2d(1, 16, kernel_size=(3, 3),
                                                         stride=(2, 2),
                                                         padding=(1, 1), bias=False)
-        # Eliminar la última capa fc de ResNet
         self.features = self.mobilenet.features
         self.avgpool = torch.nn.AdaptiveAvgPool2d((1, 1))
 

@@ -42,7 +42,7 @@ def train_model(train_data_loader, valid_data_loader,
                 model, experiment_name,
                 save_checkpoint="AI_PROJECT/output/detector_models/",
                 epochs=30,
-                lr=0.001,
+                lr=0.0001,
                 performance_parameter='map'):
     device = get_cuda_device()
     print("Training on: ", device)
@@ -58,7 +58,7 @@ def train_model(train_data_loader, valid_data_loader,
 
     for epoch in range(num_epochs):
         loss_hist.reset()
-        train_dataloader = torch.utils.data.DataLoader(train_data_loader, 128, collate_fn=collate_function_detector,
+        train_dataloader = torch.utils.data.DataLoader(train_data_loader, 64, collate_fn=collate_function_detector,
                                                        pin_memory=True, num_workers=4)
         model.train()
         print("Training epoch ", epoch)
