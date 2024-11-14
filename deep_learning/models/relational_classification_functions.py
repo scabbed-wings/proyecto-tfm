@@ -3,12 +3,16 @@ from torchmetrics.classification import BinaryAccuracy, BinaryPrecision, BinaryR
 import matplotlib.pyplot as plt
 import os
 from deep_learning.datasets.relational_classificator_dataset import transform_image_test
+from pathlib import Path
+from tqdm import tqdm
 
 
-def checkpoint(model, filedir, epoch, best):
-    filename = f"best_model_{epoch}.pth" if best else f"model_{epoch}.pth"
-    filename = os.path.join(filedir, filename)
-    torch.save(model.state_dict(), filename)
+def checkpoint(model, filedir, experiment_name, epoch, best):
+    file_parent = Path(os.path.join(filedir, experiment_name))
+    file_parent.mkdir(parents=True, exist_ok=True)
+    file_name = f"best_model_{epoch}.pth" if best else f"model_{epoch}.pth"
+    file_name = os.path.join(file_parent, file_name)
+    torch.save(model.state_dict(), file_name)
 
 
 def evaluate_epoch(model, validation_dataloader, device, roc_curve: bool = False, roc_thresholds: int = 20):
@@ -50,22 +54,23 @@ def evaluate_epoch(model, validation_dataloader, device, roc_curve: bool = False
 
 def train_model(train_data_loader, valid_data_loader,
                 model,
-                save_checkpoint="AI_PROJECT/output/classification_output"):
+                experiment_name,
+                save_checkpoint="deep_learning/output/classification_output"):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Training on: ", device)
     model.to(device)
     params = [p for p in model.parameters() if p.requires_grad]
     # optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.01)
-    optimizer = torch.optim.Adam(params, lr=0.0001)
+    optimizer = torch.optim.Adam(params, lr=0.00001)
     loss_function = torch.nn.BCEWithLogitsLoss()
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
-    num_epochs = 30
+    num_epochs = 25
     best_f1 = 0
 
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
-        for train_images_source, train_images_crop, train_labels in train_data_loader:
+        for train_images_source, train_images_crop, train_labels in tqdm(train_data_loader):
             images_source_tensor = train_images_source.to(device)
             images_crop_tensor = train_images_crop.to(device)
             labels_tensor = train_labels.to(device)
@@ -81,10 +86,10 @@ def train_model(train_data_loader, valid_data_loader,
         print(f'Validation: Accuracy {val_acc}, Precision {val_prec}, Recall {val_rec}, F1 {val_f1}')
 
         if (epoch + 1) % 2 == 0:
-            checkpoint(model, save_checkpoint, epoch=epoch+1, best=False)
+            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=False)
         elif val_f1 > best_f1:
             best_f1 = val_f1
-            checkpoint(model, save_checkpoint, epoch=epoch+1, best=True)
+            checkpoint(model, save_checkpoint, experiment_name, epoch=epoch+1, best=True)
 
 
 def test_model_metrics(weights_file, model, test_dataloader):

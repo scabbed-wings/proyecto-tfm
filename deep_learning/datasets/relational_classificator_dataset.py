@@ -28,8 +28,8 @@ def transform_image_train(dims):
 
 
 def create_classificator_dataset(train_annotation_file: str, train_images_folder: str,
-                                 test_annotation_file: str, test_images_folder: str, 
-                                 validation_proportion: float = 0.1, dims=(320,320)):
+                                 test_annotation_file: str, test_images_folder: str,
+                                 validation_proportion: float = 0.1, dims=(320, 320)):
     # Load train annotations
     f_train = open(train_annotation_file, 'r')
     train_annotation_data = json.load(f_train)
@@ -55,11 +55,11 @@ def create_classificator_dataset(train_annotation_file: str, train_images_folder
     valid_obj = PairedImageDataset(valid_set, dims, test_transform)
     test_obj = PairedImageDataset(df_test, dims, test_transform)
     print("CREATING DATALOADERS")
-    train_dataloader = DataLoader(train_obj, batch_size=128, shuffle=True, 
-                            collate_fn=collate_function_classificator)
-    validation_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True, 
-                            collate_fn=collate_function_classificator)
+    train_dataloader = DataLoader(train_obj, batch_size=128, shuffle=True,
+                                  collate_fn=collate_function_classificator)
+    validation_dataloader = DataLoader(valid_obj, batch_size=32, shuffle=True,
+                                       collate_fn=collate_function_classificator)
     test_dataloader = DataLoader(test_obj, batch_size=32, shuffle=True,
                                  collate_fn=collate_function_classificator)
-    
+
     return train_dataloader, validation_dataloader, test_dataloader

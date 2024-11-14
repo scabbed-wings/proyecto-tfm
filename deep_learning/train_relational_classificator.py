@@ -13,4 +13,4 @@ if __name__ == "__main__":
                                                                                             train_images_folder,
                                                                                             test_annotation_file,
                                                                                             test_images_folder)
-    train_model(train_dataloader, validation_dataloader, model)
+    train_model(train_dataloader, validation_dataloader, model, "experiment_1")
