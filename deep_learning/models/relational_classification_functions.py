@@ -63,8 +63,8 @@ def train_model(train_data_loader, valid_data_loader,
     # optimizer = torch.optim.SGD(params, lr=0.001, momentum=0.9, weight_decay=0.01)
     optimizer = torch.optim.Adam(params, lr=0.00001)
     loss_function = torch.nn.BCEWithLogitsLoss()
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
-    num_epochs = 25
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.3)
+    num_epochs = 30
     best_f1 = 0
 
     for epoch in range(num_epochs):

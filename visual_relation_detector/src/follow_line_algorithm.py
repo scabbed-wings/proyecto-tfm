@@ -17,11 +17,11 @@ def relation_is_valid(label_source, label_target):
 def border_boxes_points(bbox_coords):
     border_points = []
     # Todos los puntos a lo ancho del rectangulo por arriba y abajo
-    for i in range(bbox_coords[0], bbox_coords[2] + 1):
+    for i in range(bbox_coords[0], bbox_coords[2] + 1, 40):
         border_points.append((i, bbox_coords[1]))
         border_points.append((i, bbox_coords[3]))
     # Todos los puntos a lo alto del rectangulo por izquierda y derecha
-    for j in range(bbox_coords[1], bbox_coords[3] + 1):
+    for j in range(bbox_coords[1], bbox_coords[3] + 1, 40):
         border_points.append((bbox_coords[0], j))
         border_points.append((bbox_coords[2], j))
     return border_points
@@ -34,11 +34,11 @@ def resize_boxes_2_crop(xmin, ymin, bbox1, bbox2):
     bbox1 = [int(bbox1[0] - xmin), int(bbox1[1] - ymin), int(bbox1[2] - xmin), int(bbox1[3] - ymin)]
     bbox2 = [int(bbox2[0] - xmin), int(bbox2[1] - ymin), int(bbox2[2] - xmin), int(bbox2[3] - ymin)]
     # Proporcionar los puntos de los bordes
-    # bbox1 = border_boxes_points(bbox1)
-    # bbox2 = border_boxes_points(bbox2)
+    bbox1 = border_boxes_points(bbox1)
+    bbox2 = border_boxes_points(bbox2)
     # Proporcionar las esquinas
-    bbox1 = [(bbox1[0], bbox1[1]), (bbox1[0], bbox1[3]), (bbox1[2], bbox1[1]), (bbox1[2], bbox1[3])]
-    bbox2 = [(bbox2[0], bbox2[1]), (bbox2[0], bbox2[3]), (bbox2[2], bbox2[1]), (bbox2[2], bbox2[3])]
+    # bbox1 = [(bbox1[0], bbox1[1]), (bbox1[0], bbox1[3]), (bbox1[2], bbox1[1]), (bbox1[2], bbox1[3])]
+    # bbox2 = [(bbox2[0], bbox2[1]), (bbox2[0], bbox2[3]), (bbox2[2], bbox2[1]), (bbox2[2], bbox2[3])]
     return bbox1, bbox2
 
 
@@ -55,6 +55,20 @@ def check_points_in_contour(contours, bbox1, bbox2):
         if not_contained:
             break
     return not_contained
+
+
+def check_points_in_contour_2(contours, bbox1, bbox2, threshold=4):
+    combinations = [(p1, p2) for p1 in bbox1 for p2 in bbox2 if p1 != p2]
+    for contour in contours:
+        points_found = 0
+        for combination in combinations:
+            p1_in = cv2.pointPolygonTest(contour, combination[0], False)
+            p2_in = cv2.pointPolygonTest(contour, combination[1], False)
+            if p1_in >= 0 and p2_in >= 0:
+                points_found += 1
+        if points_found >= threshold:
+            return True
+    return False
 
 
 def crop_outsider_elements(bboxes, binary_image, index_source, index_target):

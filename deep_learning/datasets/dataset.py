@@ -37,25 +37,26 @@ def visualize_new_annotations(image_list, bboxes, classes,
 
 def visualize_images(image, bboxes, labels, inference: bool = False, box_index=False):
     array = image.numpy()
-    array = np.transpose(array, (1,2,0))
+    array = np.transpose(array, (1, 2, 0))
     array = cv2.cvtColor(array, cv2.COLOR_GRAY2RGB)
     bboxes = bboxes.numpy()
-    labels =labels.numpy()
+    labels = labels.numpy()
     for i in range(bboxes.shape[0]):
-            new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
-            # print(new_bboxes)
-            color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
-            cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
-                          (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
-            if box_index:
-                centroid = (int(new_bboxes[0]), int(new_bboxes[1]))
-                cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 2)
+        new_bboxes = 300 * bboxes[i] if not inference else bboxes[i]
+        # print(new_bboxes)
+        color = color_selector(int(labels[i])) if not inference else color_selector(int(labels[i]-1))
+        cv2.rectangle(array, (int(new_bboxes[0]), int(new_bboxes[1])),
+                      (int(new_bboxes[2]), int(new_bboxes[3])), color, 2)
+        if box_index:
+            centroid = (int(new_bboxes[0]), int(new_bboxes[1]))
+            cv2.putText(array, f"id {i}", centroid, cv2.FONT_HERSHEY_COMPLEX, 0.7, (20, 117, 255), 2)
+    plt.figure(0)
+    plt.axis('off')
     plt.imshow(array)
     plt.show()
 
 
-def process_data_box_unit(dataset_folder: str, 
-                 new_width: int = 640, new_height: int = 640):
+def process_data_box_unit(dataset_folder: str, new_width: int = 640, new_height: int = 640):
     image_list = glob(dataset_folder + "/*.png")
     output_list = []
     for file in image_list:
@@ -90,7 +91,7 @@ def process_data_classificator(annotation_data: list, images_folder: str):
     for annotation in annotation_data:
         crop_path = Path(os.path.join(images_folder, annotation['image_crop']))
         image_path = Path(os.path.join(images_folder, annotation['image_source']))
-        dataframe_list.append([image_path, crop_path, annotation['label'], annotation['bbox1'], 
+        dataframe_list.append([image_path, crop_path, annotation['label'], annotation['bbox1'],
                                annotation['bbox2']])
     return pd.DataFrame(dataframe_list, columns=['image_source', 'image_crop', 'label', 'bbox1', 'bbox2'])
 

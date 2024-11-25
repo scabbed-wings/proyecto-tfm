@@ -6,7 +6,7 @@ from visual_relation_detector.src.utils import load_model
 if __name__ == "__main__":
     dataset = r"data_generator\test"
     detector_weights_path = r"deep_learning\output\model_15.pth"
-    classifier_weights_path = r"deep_learning\output\classification_output\best_model_13.pth"
+    classifier_weights_path = r"deep_learning\output\classification_output\experiment_2\best_model_17.pth"
     device = "cuda"  # get_cuda_device()
     dims = (320, 320)
     print("Loading detector model")

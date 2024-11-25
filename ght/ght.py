@@ -88,28 +88,33 @@ def hough_closure(im, temp):
 
 def create_fig(temp, im_s, accum, top_points=True):
     plt.clf()
-    plt.gray()
 
-    fig = plt.figure()
-    fig.add_subplot(2, 2, 1)
+    plt.figure(0)
     plt.title("Plantilla")
+    plt.gray()
     plt.imshow(temp)
 
-    fig.add_subplot(2, 2, 2)
-    plt.title("Imagen de busqueda")
+    plt.figure(1)
+    # plt.title("Imagen de busqueda")
+    plt.axis('off')
+    plt.gray()
     plt.imshow(im_s)
 
-    fig.add_subplot(2, 2, 3)
-    plt.title("Acumulador")
-    plt.imshow(accum)
+    plt.figure(2)
+    # plt.title("Acumulador")
+    plt.axis('off')
+    plt.imshow(accum, cmap='hot', norm='linear', aspect=1)
 
-    fig.add_subplot(2, 2, 4)
-    plt.title("Deteccion")
+    plt.figure(3)
+    # plt.title("Deteccion")
+    plt.axis('off')
+    plt.gray()
     plt.imshow(im_s)
+
     if top_points:
-        top = n_max(accum, 200)
+        top = n_max(accum, 150)
     else:
-        top = threshold_accum(accum, 70)
+        top = threshold_accum(accum, 200)
 
     y_points = [pt[1][1] for pt in top]
     x_points = [pt[1][0] for pt in top]

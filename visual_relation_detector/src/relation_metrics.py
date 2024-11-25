@@ -12,6 +12,7 @@ from visual_relation_detector.src.utils import already_detected, max_min_coordin
 from collections import Counter
 import numpy as np
 import cv2
+from time import time
 
 
 def box_correspondence(pred_boxes, gt_boxes, threshold: float = 0.5):
@@ -90,6 +91,7 @@ def count_tp_fp_fn(pred_relations_list: list, gt_relations: list, metric_counter
 def get_relation_metrics(dataset: str, detector_model, classification_model, device, dims,
                          method: str = "classifier"):
     image_list = glob(dataset + "/*.png") + glob(dataset + "/*.jpg")
+    times = []
     metric_calculator = MetricCalculator()
     for image in tqdm(image_list):
         image_path = Path(image)
@@ -101,15 +103,23 @@ def get_relation_metrics(dataset: str, detector_model, classification_model, dev
         original_size_pred_boxes = resize_bounding_boxes(image_data, pred_boxes, dims)
         correspondences = box_correspondence(original_size_pred_boxes, gt_bboxes)
         if method == "classifier":
+            start_time = time()
             found_relations = loaded_crop_detections_and_relate(image_data, original_size_pred_boxes,
                                                                 classification_model)
+            final_time = time() - start_time
+            times.append(final_time)
         elif method == "contours":
+            start_time = time()
             image_data = image_data.convert('L')
             image_array = np.asarray(image_data)
             ret, thresholded_image = cv2.threshold(image_array, 127, 255, cv2.THRESH_BINARY_INV)
             kernel = np.ones((3, 3))
             dilate_threholded_image = cv2.dilate(thresholded_image, kernel, iterations=1)
             found_relations = follow_lines(dilate_threholded_image, original_size_pred_boxes, pred_labels)
+            final_time = time() - start_time
+            times.append(final_time)
         pred_gt_relations = transform_predicted_relations_to_gt(found_relations, correspondences, gt_ids)
         count_tp_fp_fn(pred_gt_relations, gt_relations_list, metric_calculator)
+
+    print(f"Time mean: {sum(times) / len(times)}s")
     return metric_calculator.calculate_metrics()
