@@ -2,7 +2,7 @@ from deep_learning.models.detector_functions import unitary_inference, resize_bo
 from deep_learning.models.detector_definition import model_defintion
 from deep_learning.models.relational_classification_model import PairedImageClassifier
 from deep_learning.models.relational_classification_functions import unitary_inference_classificator
-# from relator.read_bboxes import read_box
+from visual_relation_detector.src.read_bboxes import read_boxes
 from visual_relation_detector.src.utils import max_min_coordinates
 import torch
 from torchvision.transforms.functional import pil_to_tensor
@@ -27,7 +27,7 @@ def crop_detections_and_relate(image, pred_boxes, classifier_weights_path, class
 if __name__ == "__main__":
     model_detector = model_defintion()
     detector_weights_path = r"deep_learning\output\model_15.pth"
-    classifier_weights_path = r"deep_learning\output\classification_output\best_model_13.pth"
+    classifier_weights_path = r"deep_learning\output\classification_output\experiment_2\best_model_17.pth"
     test_image = r"deep_learning\prueba.png"
     dims = (320, 320)
     image = Image.open(test_image)
@@ -43,4 +43,4 @@ if __name__ == "__main__":
 #
     visualize_images(image_tensor, original_size_pred_boxes, pred_labels, inference=True, box_index=True)
 
-    # read_boxes(image, original_size_pred_boxes)
+    read_boxes(image, original_size_pred_boxes)

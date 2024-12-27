@@ -11,6 +11,7 @@ from tqdm import tqdm
 from visual_relation_detector.src.utils import already_detected, max_min_coordinates
 from collections import Counter
 import numpy as np
+import matplotlib.pyplot as plt
 import cv2
 from time import time
 
@@ -112,9 +113,13 @@ def get_relation_metrics(dataset: str, detector_model, classification_model, dev
             start_time = time()
             image_data = image_data.convert('L')
             image_array = np.asarray(image_data)
+            plt.imshow(image_array, cmap='gray')
+            plt.show()
             ret, thresholded_image = cv2.threshold(image_array, 127, 255, cv2.THRESH_BINARY_INV)
             kernel = np.ones((3, 3))
             dilate_threholded_image = cv2.dilate(thresholded_image, kernel, iterations=1)
+            plt.imshow(dilate_threholded_image, 'gray')
+            plt.show()
             found_relations = follow_lines(dilate_threholded_image, original_size_pred_boxes, pred_labels)
             final_time = time() - start_time
             times.append(final_time)
