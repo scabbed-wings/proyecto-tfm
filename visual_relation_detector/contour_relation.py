@@ -5,6 +5,7 @@ from torchvision.transforms.functional import pil_to_tensor
 import numpy as np
 from detect_and_relate import resize_bounding_boxes
 from visual_relation_detector.src.follow_line_algorithm import follow_lines
+from visual_relation_detector.src.read_bboxes import read_boxes
 from PIL import Image
 import cv2
 
@@ -26,3 +27,4 @@ if __name__ == "__main__":
     print("Found relations: ", relations_found)
     image_tensor = pil_to_tensor(image)
     visualize_images(image_tensor, original_size_pred_boxes, pred_labels, inference=True, box_index=True)
+    read_boxes(image, original_size_pred_boxes)

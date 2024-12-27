@@ -28,7 +28,7 @@ if __name__ == "__main__":
     model_detector = model_defintion()
     detector_weights_path = r"deep_learning\output\model_15.pth"
     classifier_weights_path = r"deep_learning\output\classification_output\experiment_2\best_model_17.pth"
-    test_image = r"deep_learning\prueba.png"
+    test_image = r"data_generator\test\img214.png"
     dims = (320, 320)
     image = Image.open(test_image)
     pred_boxes, pred_labels = unitary_inference(model_detector, detector_weights_path, image, dims)

@@ -71,7 +71,7 @@ def check_points_in_contour_2(contours, bbox1, bbox2, threshold=4):
     return False
 
 
-def crop_outsider_elements(bboxes, binary_image, index_source, index_target):
+def crop_outsider_elements(bboxes, binary_image, index_source, index_target, show_crops=False):
     copy_binary_image = binary_image.copy()
     for ind, bbox in enumerate(bboxes):
         if ind != index_source and ind != index_target:
@@ -86,8 +86,9 @@ def crop_outsider_elements(bboxes, binary_image, index_source, index_target):
     bbox_source, bbox_target = resize_boxes_2_crop(xmin, ymin, bboxes[index_source],
                                                    bboxes[index_target])
     copy_binary_image = copy_binary_image[ymin:ymax, xmin:xmax]
-    plt.imshow(copy_binary_image, 'gray')
-    plt.show()
+    if show_crops:
+        plt.imshow(copy_binary_image, 'gray')
+        plt.show()
     return copy_binary_image, bbox_source, bbox_target
 
 
