@@ -3,7 +3,7 @@ from visual_relation_detector.src.utils import load_model
 
 
 def main():
-    dataset = r"data_generator\test"
+    dataset = r'data_generator\real_sample_images'
     detector_weights_path = r"deep_learning\output\model_15.pth"
     device = "cuda"  # get_cuda_device()
     dims = (320, 320)

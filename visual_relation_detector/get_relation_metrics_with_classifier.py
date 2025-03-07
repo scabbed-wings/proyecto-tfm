@@ -4,7 +4,7 @@ from visual_relation_detector.src.utils import load_model
 
 
 if __name__ == "__main__":
-    dataset = r"data_generator\test"
+    dataset = r'data_generator\real_sample_images'
     detector_weights_path = r"deep_learning\output\model_15.pth"
     classifier_weights_path = r"deep_learning\output\classification_output\experiment_2\best_model_17.pth"
     device = "cuda"  # get_cuda_device()

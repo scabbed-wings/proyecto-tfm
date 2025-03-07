@@ -6,7 +6,7 @@ from models.detector_definition import model_defintion
 if __name__ == "__main__":
 
     train_data_loader, valid_data_loader, test_data_loader = get_torch_dataloader(dataset_path="data_generator/img_fractional",
-                                                                                  test_path="data_generator/test",
+                                                                                  test_path=r'data_generator\real_sample_images',
                                                                                   dims=(320, 320))
     model = model_defintion()
     weights_path = r"deep_learning\output\detector_models\experiment5\best_model_10.pth"
