@@ -6,3 +6,4 @@
 /pred_labels.pkl
 /build
 /tfm.egg-info
+.pdm-python
