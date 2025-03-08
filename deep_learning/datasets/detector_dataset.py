@@ -1,8 +1,8 @@
-from datasets.dataset import process_data_bboxes
+from deep_learning.datasets.dataset import process_data_bboxes
 from sklearn.model_selection import train_test_split
-from datasets.utils.custom_dataset import CustomBBoxDataset
+from deep_learning.datasets.utils.custom_dataset import CustomBBoxDataset
 from torch.utils.data import DataLoader
-from datasets.utils.transformations import collate_function_detector
+from deep_learning.datasets.utils.transformations import collate_function_detector
 
 
 def get_torch_dataloader(dims, dataset_path="data_generator/img_fractional",

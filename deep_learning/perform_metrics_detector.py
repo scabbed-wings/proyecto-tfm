@@ -1,7 +1,7 @@
-from datasets.detector_dataset import get_torch_dataloader
-from models.detector_functions import inference_test, get_inference_and_metrics, metrics_with_torchmetrics
-from models.utils import create_PRC
-from models.detector_definition import model_defintion
+from deep_learning.datasets.detector_dataset import get_torch_dataloader
+from deep_learning.models.detector_functions import inference_test, get_inference_and_metrics, metrics_with_torchmetrics
+from deep_learning.models.utils import create_PRC
+from deep_learning.models.detector_definition import model_defintion
 
 if __name__ == "__main__":
 
