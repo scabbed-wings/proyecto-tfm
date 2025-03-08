@@ -3,7 +3,7 @@ from deep_learning.models.detector_definition import model_defintion
 from deep_learning.datasets.dataset import visualize_images
 from torchvision.transforms.functional import pil_to_tensor
 import numpy as np
-from detect_and_relate import resize_bounding_boxes
+from visual_relation_detector.detect_and_relate import resize_bounding_boxes
 from visual_relation_detector.src.follow_line_algorithm import follow_lines
 from visual_relation_detector.src.read_bboxes import read_boxes
 from PIL import Image

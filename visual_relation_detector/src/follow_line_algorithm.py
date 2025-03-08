@@ -73,6 +73,7 @@ def check_points_in_contour_2(contours, bbox1, bbox2, threshold=4):
 
 def crop_outsider_elements(bboxes, binary_image, index_source, index_target, show_crops=False):
     copy_binary_image = binary_image.copy()
+    # Eliminar cajas que no se quieren comprobar relación y rellenar las que sí
     for ind, bbox in enumerate(bboxes):
         if ind != index_source and ind != index_target:
             bbox_to_crop = bbox.int()
@@ -80,6 +81,8 @@ def crop_outsider_elements(bboxes, binary_image, index_source, index_target, sho
                               bbox_to_crop[0]:bbox_to_crop[2]] = 0
         elif ind == index_source or ind == index_target:
             bbox_to_fill = bbox.int()
+            cv2.rectangle(copy_binary_image, (int(bbox_to_fill[0]), int(bbox_to_fill[1])),
+                          (int(bbox_to_fill[2]), int(bbox_to_fill[3])), (0, 0, 255), 2)
             copy_binary_image[bbox_to_fill[1]:bbox_to_fill[3],
                               bbox_to_fill[0]:bbox_to_fill[2]] = 255
     xmin, ymin, xmax, ymax = max_min_coordinates(bboxes[index_source], bboxes[index_target])
@@ -92,7 +95,7 @@ def crop_outsider_elements(bboxes, binary_image, index_source, index_target, sho
     return copy_binary_image, bbox_source, bbox_target
 
 
-def follow_lines(binary_image, bboxes, labels):
+def follow_lines(binary_image, bboxes, labels, show_contours=False):
     found_relations = []
     for index_source, _ in enumerate(bboxes):
         bbox_source_label = labels[index_source]
@@ -105,6 +108,11 @@ def follow_lines(binary_image, bboxes, labels):
                                                                                   index_source, index_target)
                 contours = cv2.findContours(cropped_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
                 contours = contours[0] if len(contours) == 2 else contours[1]
+                if show_contours:
+                    cropped_binary_color = cv2.cvtColor(cropped_binary, cv2.COLOR_GRAY2BGR)
+                    cv2.drawContours(cropped_binary_color, contours, -1, (255, 0, 0), 4)
+                    plt.imshow(cropped_binary_color)
+                    plt.show()
                 if check_points_in_contour(contours, bbox_source, bbox_target):
                     found_relations.append([index_source, index_target])
     return found_relations
