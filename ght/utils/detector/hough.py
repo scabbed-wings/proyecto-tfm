@@ -14,11 +14,11 @@ def ght_det(im, mode, alg):
     temp = 0
 
     if mode == "r":
-        temp = cv2.imread("utils/detector/rect.png", cv2.IMREAD_GRAYSCALE)
+        temp = cv2.imread("ght/utils/detector/rect.png", cv2.IMREAD_GRAYSCALE)
     elif mode == "e":
-        temp = cv2.imread("utils/detector/ellipse2.png", cv2.IMREAD_GRAYSCALE)
+        temp = cv2.imread("ght/utils/detector/ellipse2.png", cv2.IMREAD_GRAYSCALE)
     else:
-        temp = cv2.imread("utils/detector/rhombus.png", cv2.IMREAD_GRAYSCALE)
+        temp = cv2.imread("ght/utils/detector/rhombus.png", cv2.IMREAD_GRAYSCALE)
     
     #scale = 0.5
     #new_shape = (int(temp.shape[0] * scale), int(temp.shape[1] * scale))
