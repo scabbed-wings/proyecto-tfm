@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 from pathlib import Path
-from utils.balanced_counter import Balanced_Counter
+from data_generator.utils.balanced_counter import Balanced_Counter
 
 
 def crop_labels(image_name, crop_name, label, bbox_source, bbox_target):

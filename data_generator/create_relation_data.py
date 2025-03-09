@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import os
 import json
-from utils.generate_relational_images import crop_relational_image
+from data_generator.utils.generate_relational_images import crop_relational_image
 import cv2
 
 
@@ -15,7 +15,7 @@ def create_relational_data(input_path: str, output_path: str, balance_relations:
     labels_path = Path(os.path.join(output_parent, 'labels.json'))
     output_parent.mkdir(parents=True, exist_ok=True)
     crops_path.mkdir(parents=True, exist_ok=True)
-    images_list = glob(input_path + "/*.png")
+    images_list = glob(input_path + "/*.png") + glob(input_path + "/*.jpg")
     dataset_labels = []
 
     for image_name in images_list:
@@ -35,9 +35,9 @@ def create_relational_data(input_path: str, output_path: str, balance_relations:
 
 
 if __name__ == "__main__":
-    train_path = "data_generator/img_fractional"
-    train_output_parent = "data_generator/train_relational_images"
-    test_path = "data_generator/test"
-    test_output_parent = "data_generator/test_relational_images"
-    create_relational_data(train_path, train_output_parent, balance_relations=True)
+    # train_path = "data_generator/img_fractional"
+    # train_output_parent = "data_generator/train_relational_images"
+    test_path = "data_generator/real_sample_images"
+    test_output_parent = "data_generator/real_sample_relational_images"
+    # create_relational_data(train_path, train_output_parent, balance_relations=True)
     create_relational_data(test_path, test_output_parent)

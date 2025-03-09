@@ -13,3 +13,5 @@ utils/__pycache__
 Train_Detection
 real_images_2
 real_sample_images
+__pycache__
+real_sample_relational_images
